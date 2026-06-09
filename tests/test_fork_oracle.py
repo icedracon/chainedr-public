@@ -4,6 +4,7 @@ AA7702-002 EOA-detection break dynamically. Skips when the WSL/anvil/RPC
 toolchain or RPC_URL is unavailable — never silently passes.
 """
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -12,6 +13,15 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+
+
+def _to_wsl_path(win_path: str) -> str:
+    """Convert a Windows path to its WSL equivalent (``/mnt/<drive>/...``)."""
+    path = win_path.replace("\\", "/")
+    m = re.match(r"^([A-Za-z]):/", path)
+    if m:
+        return f"/mnt/{m.group(1).lower()}/{path[3:]}"
+    return path
 
 
 def test_fork_oracle_module_pure_logic():
@@ -25,7 +35,7 @@ def test_fork_oracle_module_pure_logic():
     assert d["value_before_delegation"] is True and d["value_after_delegation"] is False
 
 WSL_DISTRO = "Ubuntu-22.04"
-POC = str(Path(__file__).resolve().parent.parent / "poc" / "fork_7702_oracle.py")
+POC = _to_wsl_path(str(Path(__file__).resolve().parent.parent / "poc" / "fork_7702_oracle.py"))
 
 
 def _ready() -> bool:

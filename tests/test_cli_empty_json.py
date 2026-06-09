@@ -136,13 +136,12 @@ def test_ci_extended_flag_enables_opt_in_detector(tmp_path):
     assert "erc7821" in {f.get("category") for f in extended_findings}
 
 
-def test_console_entrypoint_routes_live_bytecode_help():
+def test_console_entrypoint_routes_bytecode_help():
     result = subprocess.run(
         [
             sys.executable,
             "-m",
             "chainedr.cli",
-            "live",
             "bytecode",
             "--help",
         ],
@@ -153,9 +152,9 @@ def test_console_entrypoint_routes_live_bytecode_help():
     )
 
     assert result.returncode == 0, result.stderr + result.stdout
-    assert "--recent-type4" in result.stdout
-    assert "--evidence-out" in result.stdout
-    assert "--erc20-token" in result.stdout
+    assert "--rpc-url" in result.stdout
+    assert "--delegation-target" in result.stdout
+    assert "--format" in result.stdout
 
 
 def test_scan_writes_empty_json_for_clean_target(tmp_path):

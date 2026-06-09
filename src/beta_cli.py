@@ -22,8 +22,10 @@ try:
 except ImportError:  # direct source-tree imports used by regression tests
     import cli as _cli
 
-PROJECT_URL = "https://github.com/icedracon/chainedr"
-_OLD_PROJECT_URL = "https://github.com/icedracon/chainedr"
+PROJECT_URL = "https://github.com/icedracon/chainedr-public"
+# Pre-public historical URL. Substring-distinct from PROJECT_URL so the
+# epilog rewrite remains observable from a test perspective.
+_OLD_PROJECT_URL = "https://github.com/icedracon/cyberedr-comertion"
 
 _ORIGINAL_BUILD_PARSER = _cli.build_parser
 _ORIGINAL_WRITE_SARIF = _cli._write_sarif
