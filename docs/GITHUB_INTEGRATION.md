@@ -467,7 +467,7 @@ Example usage after publishing the action:
 
 ```yaml
 - name: ChainEDR Analyzer Scan
-  uses: icedracon/chainedr/plugins/github-action@master
+  uses: icedracon/chainedr-public/plugins/github-action@master
   with:
     contracts-path: contracts/
     min-severity: MEDIUM

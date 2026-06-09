@@ -622,7 +622,7 @@ jobs:
           fi
           if [ ! -f chainedr-report/chainedr.sarif ]; then
             cat > chainedr-report/chainedr.sarif <<'SARIF'
-          {"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"ChainEDR","informationUri":"https://github.com/icedracon/chainedr","rules":[]}},"results":[]}]}
+          {"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"ChainEDR","informationUri":"https://github.com/icedracon/chainedr-public","rules":[]}},"results":[]}]}
           SARIF
           fi
           if [ ! -f chainedr-report/evidence_bundle.md ]; then
@@ -1209,7 +1209,7 @@ def _write_sarif(path: str, findings):
                 "driver": {
                     "name": "ChainEDR",
                     "version": __version__,
-                    "informationUri": "https://github.com/icedracon/chainedr",
+                    "informationUri": "https://github.com/icedracon/chainedr-public",
                     "rules": list(rules.values()),
                 }
             },
@@ -1515,7 +1515,7 @@ def build_parser() -> argparse.ArgumentParser:
   chainedr live monitor 0xA0b8...
   chainedr doctor
 
-{C.DIM}v{__version__} | https://github.com/icedracon/chainedr{C.RESET}
+{C.DIM}v{__version__} | https://github.com/icedracon/chainedr-public{C.RESET}
 """,
     )
     parser.add_argument("--version", action="version", version=f"ChainEDR v{__version__}")

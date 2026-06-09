@@ -57,8 +57,8 @@ full = [
 chainedr = "chainedr.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/icedracon/chainedr"
-Issues   = "https://github.com/icedracon/chainedr/issues"
+Homepage = "https://github.com/icedracon/chainedr-public"
+Issues   = "https://github.com/icedracon/chainedr-public/issues"
 
 [tool.setuptools]
 packages = ["chainedr"]

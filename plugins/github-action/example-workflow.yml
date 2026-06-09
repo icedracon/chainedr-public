@@ -30,7 +30,7 @@ jobs:
 
       - name: ChainEDR Analyzer Scan
         id: chainedr
-        uses: icedracon/chainedr/plugins/github-action@master
+        uses: icedracon/chainedr-public/plugins/github-action@master
         with:
           contracts-path: contracts/
           min-severity: MEDIUM

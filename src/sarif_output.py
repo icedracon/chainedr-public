@@ -97,7 +97,7 @@ def to_sarif_v2_1_0(findings: List[Dict],
                 'fullDescription': {
                     'text': (f.get('description', '') or '')[:600],
                 },
-                'helpUri':         f"https://github.com/icedracon/chainedr/wiki/{check}",
+                'helpUri':         f"https://github.com/icedracon/chainedr-public/wiki/{check}",
                 'properties': {
                     'tags': [
                         'security',
@@ -191,7 +191,7 @@ def to_sarif_v2_1_0(findings: List[Dict],
                     'name':    'ChainEDR',
                     'version': tool_version,
                     'semanticVersion': tool_version,
-                    'informationUri': repo_url or 'https://github.com/icedracon/chainedr',
+                    'informationUri': repo_url or 'https://github.com/icedracon/chainedr-public',
                     'rules':   rules,
                     'shortDescription': {
                         'text': 'Bounty-grade exploitability triage for EVM smart contracts',

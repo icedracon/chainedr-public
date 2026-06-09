@@ -75,7 +75,7 @@ python - <<'PY'
 import json
 from pathlib import Path
 
-PROJECT_URL = "https://github.com/icedracon/chainedr"
+PROJECT_URL = "https://github.com/icedracon/chainedr-public"
 
 clean = json.loads(Path(".beta-smoke/clean.json").read_text(encoding="utf-8"))
 clean_findings = clean if isinstance(clean, list) else clean.get("findings", [])

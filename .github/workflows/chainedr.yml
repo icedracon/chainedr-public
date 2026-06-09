@@ -88,7 +88,7 @@ jobs:
           fi
           if [ ! -f chainedr-report/chainedr.sarif ]; then
             cat > chainedr-report/chainedr.sarif <<'SARIF'
-          {"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"ChainEDR","informationUri":"https://github.com/icedracon/chainedr","rules":[]}},"results":[]}]}
+          {"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"ChainEDR","informationUri":"https://github.com/icedracon/chainedr-public","rules":[]}},"results":[]}]}
           SARIF
           fi
           if [ ! -f chainedr-report/evidence_bundle.md ]; then

@@ -34,7 +34,7 @@ Analyzer beta work plus the latest detector registry / scan-warning fixes.
 ### 1. Packaging and installation
 
 - [x] `src/pyproject.toml` contains package metadata and the `chainedr` console script.
-- [x] Package metadata points to the `icedracon/chainedr` repository.
+- [x] Package metadata points to the `icedracon/chainedr-public` repository.
 - [x] The release smoke builds a wheel from `./src`.
 - [x] The release smoke installs the built wheel rather than relying only on editable source state.
 - [x] The release smoke runs `python -m pip check`.
@@ -94,7 +94,7 @@ Analyzer beta work plus the latest detector registry / scan-warning fixes.
 
 ### 6. Branch promotion
 
-- [x] For the clean `icedracon/chainedr` repo, the historical `master` state is preserved as `backup/master-before-analyzer-20260602`.
+- [x] For the clean `icedracon/chainedr-public` repo, the historical `master` state is preserved as `backup/master-before-analyzer-20260602`.
 - [x] `docs/PROMOTE_ANALYZER_TO_MASTER.md` documents guarded promotion with `--force-with-lease` and rollback.
 - [x] Promote the tested integration branch to `master` after the smoke transcript is green.
 - [ ] Rerun the smoke script after promotion.
