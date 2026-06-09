@@ -1,0 +1,26 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Limitations}
+
+\textbf{Regex-based analysis.} ChainEDR uses source-level pattern matching without data flow or symbolic execution. This means it cannot detect vulnerabilities requiring inter-contract analysis (e.g., a delegation target that calls another contract which then calls back). We accept this trade-off for CI throughput while noting that exact throughput depends on repository size, detector set, and runner hardware.
+
+\textbf{Context sensitivity.} Some checks gate on keyword presence (e.g., ``delegation'' in the source) to identify delegation targets. Contracts that are delegation targets but use non-standard naming may evade detection. Conversely, contracts that coincidentally contain these keywords may receive findings they consider irrelevant.
+
+\textbf{Evasion vectors.} ChainEDR's regex-based approach is inherently evadable. We identify three classes of evasion: (1)~\textit{Obfuscation}: renaming functions or variables to avoid keyword matching (e.g., replacing ``delegation'' with a non-standard term) defeats context gating. (2)~\textit{Indirect patterns}: a contract that performs \texttt{tx.origin} checks via an imported library rather than inline source code evades single-file regex. (3)~\textit{Architectural mitigation}: as demonstrated by the Alchemy Modular Account V2 scan, contracts that mitigate 7702 risks through cross-file design patterns (domain separators, storage namespacing, EntryPoint gating at the account layer) produce FP because the regex cannot see the mitigation. We accept these limitations as inherent to source-level pattern matching and mitigate (1)--(2) with broad keyword sets and (3) with the FP filter and verdict labeling system.
+
+\textbf{Confidence calibration.} Per-check confidence scores (0.55--0.95) are manually calibrated based on pattern specificity, not empirically derived from a large labeled dataset. Future work should calibrate against a larger corpus of confirmed vulnerabilities.
+
+\textbf{Corpus representativeness.} EIP7702-Bench contains 57 synthetic contracts designed to isolate individual vulnerability patterns. With $n=1$ sample per detector, the Wilson 95\% CI width is 0.155---adequate for demonstrating detection capability but insufficient for precise accuracy estimation. Real-world contracts exhibit multiple interacting patterns, and the controlled corpus may overestimate precision in practice. Our production scan (272 findings on 499 files across four codebases) provides a more realistic assessment but requires manual triage. Expanding the corpus to $\geq$10 samples per detector (requiring $\geq$300 contracts) is planned as future work.
+
+\subsection{Threats to Validity}
+
+\textbf{Internal validity.} Manual triage of production findings introduces subjectivity. We mitigate this by using structured criteria: a finding is a true positive if the flagged pattern would produce a different security outcome when called by a delegated EOA versus a plain EOA.
+
+\textbf{External validity.} Our production scan covers four codebases (including the most widely deployed Solidity library) but not the entire Ethereum ecosystem. Findings on other contract categories (DeFi, NFT, governance) may differ.
+
+\textbf{Construct validity.} Competitor tools may detect related but non-identical issues (e.g., Slither's generic reentrancy check may flag a pattern that AA7702-003 also flags, but without the EIP-7702-specific diagnosis). Our comparison measures EIP-7702-\textit{specific} detection only.
+
+\subsection{Future Work}
+
+Four directions emerge: (1) AST-based analysis for higher precision on complex patterns, potentially via Slither's intermediate representation; (2) integration with symbolic execution (Halmos, Mythril) for formal proof of exploitability; (3) runtime monitoring of EIP-7702 delegation events on-chain via the EVM trace analyzer (already implemented for call-tree structural detection); (4) corpus expansion to $\geq$300 contracts ($n \geq 10$ per detector) to narrow confidence intervals below 0.05 and enable per-check statistical validation.

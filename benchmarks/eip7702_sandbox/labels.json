@@ -1,0 +1,507 @@
+{
+  "name": "eip7702_sandbox_benchmark",
+  "version": "1.1.0",
+  "description": "Labeled benchmark for EIP-7702 delegation + ERC-7562 validation-sandbox bypass checks.",
+  "standards": [
+    "EIP-7702",
+    "ERC-7562",
+    "ERC-4337"
+  ],
+  "samples": [
+    {
+      "id": "aa7702-001_vulnerable",
+      "path": "vulnerable/txorigin.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-001",
+      "rule_under_test": "AA7702-001",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-001_fixed",
+      "path": "fixed/txorigin.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-001",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-001_benign",
+      "path": "benign/txorigin.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-001",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-002_vulnerable",
+      "path": "vulnerable/iscontract.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-002",
+      "rule_under_test": "AA7702-002",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-002_fixed",
+      "path": "fixed/iscontract.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-002",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-002_benign",
+      "path": "benign/iscontract.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-002",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-003_vulnerable",
+      "path": "vulnerable/callback.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-003",
+      "rule_under_test": "AA7702-003",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-003_fixed",
+      "path": "fixed/callback.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-003",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-003_benign",
+      "path": "benign/callback.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-003",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-004_vulnerable",
+      "path": "vulnerable/revocation.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-004",
+      "rule_under_test": "AA7702-004",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-004_fixed",
+      "path": "fixed/revocation.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-004",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-004_benign",
+      "path": "benign/revocation.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-004",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-005_vulnerable",
+      "path": "vulnerable/storage.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-005",
+      "rule_under_test": "AA7702-005",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-005_fixed",
+      "path": "fixed/storage.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-005",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-005_benign",
+      "path": "benign/storage.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-005",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-006_vulnerable",
+      "path": "vulnerable/delegatecall.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-006",
+      "rule_under_test": "AA7702-006",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-006_fixed",
+      "path": "fixed/delegatecall.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-006",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-006_benign",
+      "path": "benign/delegatecall.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-006",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-007_vulnerable",
+      "path": "vulnerable/gas.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-007",
+      "rule_under_test": "AA7702-007",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-007_fixed",
+      "path": "fixed/gas.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-007",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-007_benign",
+      "path": "benign/gas.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-007",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-008_vulnerable",
+      "path": "vulnerable/initialization.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-008",
+      "rule_under_test": "AA7702-008",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-008_fixed",
+      "path": "fixed/initialization.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-008",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-008_benign",
+      "path": "benign/initialization.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-008",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-009_vulnerable",
+      "path": "vulnerable/proxy.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-009",
+      "rule_under_test": "AA7702-009",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-009_fixed",
+      "path": "fixed/proxy.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-009",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-009_benign",
+      "path": "benign/proxy.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-009",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-010_vulnerable",
+      "path": "vulnerable/permit.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-010",
+      "rule_under_test": "AA7702-010",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-010_fixed",
+      "path": "fixed/permit.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-010",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-010_benign",
+      "path": "benign/permit.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-010",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-013_vulnerable",
+      "path": "vulnerable/entrypoint.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-013",
+      "rule_under_test": "AA7702-013",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-013_fixed",
+      "path": "fixed/entrypoint.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-013",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-013_benign",
+      "path": "benign/entrypoint.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-013",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-021_vulnerable",
+      "path": "vulnerable/txorigin2.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7702-021",
+      "rule_under_test": "AA7702-021",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-021_fixed",
+      "path": "fixed/txorigin2.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-021",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "aa7702-021_benign",
+      "path": "benign/txorigin2.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-021",
+      "detector_under_test": "eip7702"
+    },
+    {
+      "id": "vuln_validation_environment",
+      "path": "vulnerable/ValidationEnvironmentBypass.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-001",
+      "rule_under_test": "AA7562-001",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "OP-011/OP-012"
+    },
+    {
+      "id": "vuln_validation_value_call",
+      "path": "vulnerable/ValidationValueCall.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-002",
+      "rule_under_test": "AA7562-002",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "OP-061"
+    },
+    {
+      "id": "vuln_code_drift",
+      "path": "vulnerable/ValidationCodeDrift.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-003",
+      "rule_under_test": "AA7562-003",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "code_boundary",
+      "erc7562_rule": "COD-010"
+    },
+    {
+      "id": "vuln_multiple_auth_tuples",
+      "path": "vulnerable/MultipleAuthorizationTuples.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-004",
+      "rule_under_test": "AA7562-004",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-010"
+    },
+    {
+      "id": "vuln_delegated_non_sender_entity",
+      "path": "vulnerable/DelegatedNonSenderEntity.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-005",
+      "rule_under_test": "AA7562-005",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "AUTH-020/AUTH-030"
+    },
+    {
+      "id": "vuln_delegate_mismatch",
+      "path": "vulnerable/SameSenderDelegateMismatch.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-006",
+      "rule_under_test": "AA7562-006",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-040"
+    },
+    {
+      "id": "vuln_signature_domain_binding",
+      "path": "vulnerable/SignatureDomainBinding.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-007",
+      "rule_under_test": "AA7562-007",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "ERC-4337 userOpHash binding"
+    },
+    {
+      "id": "vuln_missing_entrypoint_gate",
+      "path": "vulnerable/MissingEntryPointGate.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-008",
+      "rule_under_test": "AA7562-008",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "ERC-4337 EntryPoint isolation"
+    },
+    {
+      "id": "vuln_preverification_gas_underaccounted",
+      "path": "vulnerable/PreVerificationGasUnderaccounted.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-009",
+      "rule_under_test": "AA7562-009",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "EIP-7702 PER_EMPTY_ACCOUNT_COST"
+    },
+    {
+      "id": "fixed_validation_environment",
+      "path": "fixed/ValidationEnvironmentFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-001",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "OP-011/OP-012"
+    },
+    {
+      "id": "fixed_validation_value_call",
+      "path": "fixed/ValidationValueCallFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-002",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "OP-061"
+    },
+    {
+      "id": "fixed_code_drift",
+      "path": "fixed/ValidationCodeDriftFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-003",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "code_boundary",
+      "erc7562_rule": "COD-010"
+    },
+    {
+      "id": "fixed_multiple_auth_tuples",
+      "path": "fixed/MultipleAuthorizationTuplesFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-004",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-010"
+    },
+    {
+      "id": "fixed_delegated_sender_role",
+      "path": "fixed/DelegatedSenderRoleFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-005",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "AUTH-020/AUTH-030"
+    },
+    {
+      "id": "fixed_delegate_consistency",
+      "path": "fixed/SameSenderDelegateConsistencyFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-006",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-040"
+    },
+    {
+      "id": "fixed_signature_domain_binding",
+      "path": "fixed/SignatureDomainBindingFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-007",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "ERC-4337 userOpHash binding"
+    },
+    {
+      "id": "fixed_entrypoint_gate",
+      "path": "fixed/EntryPointGateFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-008",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "ERC-4337 EntryPoint isolation"
+    },
+    {
+      "id": "fixed_preverification_gas",
+      "path": "fixed/PreVerificationGasFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "rule_under_test": "AA7562-009",
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "EIP-7702 PER_EMPTY_ACCOUNT_COST"
+    },
+    {
+      "id": "benign_minimal_account",
+      "path": "benign/MinimalSafeAccount.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "validation_boundary",
+      "erc7562_rule": null
+    },
+    {
+      "id": "benign_entrypoint_gated_account",
+      "path": "benign/EntryPointGatedAccount.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "validation_boundary",
+      "erc7562_rule": null
+    },
+    {
+      "id": "benign_bundle_authorization_policy",
+      "path": "benign/BundleAuthorizationPolicy.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "detector_under_test": "eip7702_validation",
+      "sandbox_boundary": "replay_boundary",
+      "erc7562_rule": null
+    }
+  ]
+}

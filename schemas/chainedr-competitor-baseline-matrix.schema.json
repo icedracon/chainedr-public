@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/icedracon/chainedr/schemas/chainedr-competitor-baseline-matrix.schema.json",
+  "title": "ChainEDR competitor baseline matrix",
+  "description": "Output contract for scripts/competitor_baseline_matrix.py.",
+  "type": "object",
+  "required": [
+    "name",
+    "timestamp",
+    "claim_policy",
+    "chainedr_result",
+    "tools",
+    "measured_tools",
+    "next_required_evidence"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "claim_policy": {
+      "type": "string"
+    },
+    "chainedr_result": {
+      "type": ["object", "null"]
+    },
+    "measured_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "tool",
+          "comparison_role",
+          "scope",
+          "run_status",
+          "available",
+          "version",
+          "measured",
+          "evidence_level"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "tool": {
+            "type": "string"
+          },
+          "comparison_role": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "run_status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "ready_to_run",
+              "not_installed",
+              "manual_baseline_needed"
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "path": {
+            "type": ["string", "null"]
+          },
+          "version": {
+            "type": "string"
+          },
+          "measured": {
+            "type": "boolean"
+          },
+          "evidence_level": {
+            "type": "string",
+            "enum": [
+              "measured_subject",
+              "subject_without_result",
+              "installed_not_measured",
+              "not_available",
+              "manual_baseline_needed",
+              "not_measured"
+            ]
+          }
+        }
+      }
+    },
+    "next_required_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

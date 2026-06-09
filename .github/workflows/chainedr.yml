@@ -1,0 +1,153 @@
+name: ChainEDR EIP-7702 Security Scan
+
+on:
+  pull_request:
+    paths:
+      - "**/*.sol"
+      - "**/*.nr"
+      - "foundry.toml"
+      - "hardhat.config.*"
+      - "remappings.txt"
+      - ".github/workflows/chainedr.yml"
+  push:
+    branches: [main, master, develop]
+    paths:
+      - "**/*.sol"
+      - "**/*.nr"
+      - "foundry.toml"
+      - "hardhat.config.*"
+      - "remappings.txt"
+      - ".github/workflows/chainedr.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
+concurrency:
+  group: chainedr-template-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chainedr:
+    name: Analyze smart contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install ChainEDR
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "src/pyproject.toml" ]; then
+            python -m pip install ./src
+          else
+            python -m pip install chainedr
+          fi
+
+      - name: Select scan target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d contracts ]; then
+            echo "path=contracts" >> "$GITHUB_OUTPUT"
+          elif [ -d src ] && find src -name '*.sol' -print -quit | grep -q .; then
+            echo "path=src" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run ChainEDR scan
+        id: scan
+        continue-on-error: true
+        shell: bash
+        run: |
+          chainedr ci "${{ steps.target.outputs.path }}" \
+            --profile auditor \
+            --out-dir chainedr-report \
+            --no-external \
+            --deep \
+            --fail-on high
+
+      - name: Normalize report files
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p chainedr-report
+          if [ ! -f chainedr-report/scan.json ]; then
+            cat > chainedr-report/scan.json <<'JSON'
+          {"findings":[],"status":"no-results","message":"ChainEDR did not produce JSON; inspect workflow logs."}
+          JSON
+          fi
+          if [ ! -f chainedr-report/chainedr.sarif ]; then
+            cat > chainedr-report/chainedr.sarif <<'SARIF'
+          {"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json","runs":[{"tool":{"driver":{"name":"ChainEDR","informationUri":"https://github.com/icedracon/chainedr","rules":[]}},"results":[]}]}
+          SARIF
+          fi
+          if [ ! -f chainedr-report/evidence_bundle.md ]; then
+            printf '# ChainEDR Evidence Bundle\n\nChainEDR did not produce a full evidence bundle; inspect workflow logs.\n' > chainedr-report/evidence_bundle.md
+          fi
+          if [ ! -f chainedr-report/executive_summary.md ]; then
+            printf '# ChainEDR Executive Summary\n\nChainEDR did not produce a full executive summary; inspect workflow logs.\n' > chainedr-report/executive_summary.md
+          fi
+          if [ ! -f chainedr-report/manifest.json ]; then
+            printf '{"profile":"auditor","status":"no-results","message":"ChainEDR did not produce a full auditor manifest; inspect workflow logs."}\n' > chainedr-report/manifest.json
+          fi
+
+      - name: Summarize ChainEDR results
+        if: always()
+        shell: bash
+        env:
+          CHAINEDR_TARGET: ${{ steps.target.outputs.path }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from collections import Counter
+          from pathlib import Path
+
+          report_path = Path("chainedr-report/scan.json")
+          try:
+              data = json.loads(report_path.read_text(encoding="utf-8"))
+          except Exception as exc:
+              data = {"findings": [], "message": f"Could not parse report: {exc}"}
+
+          findings = data if isinstance(data, list) else data.get("findings", [])
+          severities = Counter(str(f.get("severity", "UNKNOWN")).upper() for f in findings)
+          lines = [
+              "## ChainEDR Security Scan",
+              "",
+              f"Target: `{os.environ.get('CHAINEDR_TARGET', '.')}`",
+              f"Findings: **{len(findings)}**",
+              "",
+              "| Severity | Count |",
+              "| --- | ---: |",
+          ]
+          for severity in ("CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"):
+              lines.append(f"| {severity} | {severities.get(severity, 0)} |")
+          if isinstance(data, dict) and data.get("message"):
+              lines.extend(["", f"Note: {data['message']}"])
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as handle:
+              handle.write("\n".join(lines) + "\n")
+          PY
+
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('chainedr-report/chainedr.sarif') != ''
+        continue-on-error: true
+        with:
+          sarif_file: chainedr-report/chainedr.sarif
+          category: chainedr
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: chainedr-report
+          path: chainedr-report/**
+          retention-days: 14

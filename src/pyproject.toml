@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chainedr"
+version = "3.2.0"
+description = "Static Pectra-era security analyzer for EIP-7702, ERC-4337, and ERC-7562 smart-account assumptions"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Zorayr Saroyan", email = "zorayrsaroyan13@gmail.com" }
+]
+keywords = ["security", "smart-contracts", "solidity", "ethereum", "eip-7702", "erc-4337", "pectra", "audit", "static-analysis"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "eth-abi>=5.0",
+    "eth-hash[pycryptodome]>=0.7",
+    "eth-utils>=5.0",
+    "numpy>=1.26",
+    "sqlalchemy>=1.4",
+    "requests>=2.28",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "pydantic>=2",
+    "python-dotenv>=1.0",
+]
+live = [
+    "web3>=6.0",
+]
+full = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "pydantic>=2",
+    "python-dotenv>=1.0",
+    "web3>=6.0",
+    "slither-analyzer>=0.10",
+]
+
+[project.scripts]
+chainedr = "chainedr.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/icedracon/chainedr"
+Issues   = "https://github.com/icedracon/chainedr/issues"
+
+[tool.setuptools]
+packages = ["chainedr"]
+
+[tool.setuptools.package-dir]
+"chainedr" = "."
+
+[tool.setuptools.package-data]
+"chainedr" = [
+    "selector_registry.json",
+]

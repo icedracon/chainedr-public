@@ -1,0 +1,160 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+We evaluate ChainEDR's EIP-7702 detection capabilities across five research questions using a purpose-built benchmark corpus, real-world account abstraction code, and competitor comparison.
+
+\subsection{Research Questions}
+
+\begin{itemize}
+    \item \textbf{RQ1:} How effective is ChainEDR at detecting EIP-7702 vulnerabilities?
+    \item \textbf{RQ2:} Do existing static analyzers detect any EIP-7702-specific issues?
+    \item \textbf{RQ3:} What is the false positive rate on production code?
+    \item \textbf{RQ4:} What is the runtime performance overhead?
+    \item \textbf{RQ5:} Can ChainEDR find real issues in production AA codebases?
+\end{itemize}
+
+\subsection{Evaluation Corpus: EIP7702-Bench}
+
+We construct \textit{EIP7702-Bench}, a labeled benchmark corpus for EIP-7702 vulnerability detection, comprising 47 Solidity contracts across three categories (Table~\ref{tab:corpus}).
+
+\begin{table}[h]
+\centering
+\caption{EIP7702-Bench corpus composition}
+\label{tab:corpus}
+\begin{tabular}{lcl}
+\hline
+\textbf{Category} & \textbf{Count} & \textbf{Purpose} \\
+\hline
+Vulnerable & 21 & One per benchmarked delegation/validation check \\
+Fixed & 21 & Patched versions (must not fire the rule under test) \\
+Benign & 5 & Negative controls for target-rule regression \\
+\hline
+\textbf{Total} & \textbf{47} & \\
+\hline
+\end{tabular}
+\end{table}
+
+Each vulnerable contract targets exactly one benchmarked check and contains the minimal code pattern that triggers detection. The current corpus covers 12 AA7702 delegation checks and 9 AA7562 validation checks; ChainEDR implements additional AA7702 checks that remain future benchmark-expansion targets. Each fixed contract applies the recommended mitigation and must not trigger the rule under test. Benign contracts are negative controls for target-rule regression. The corpus is distributed with machine-readable labels (\texttt{labels.json}) and a reproducible evaluation script.
+
+\subsection{RQ1: Detection Effectiveness}
+
+Table~\ref{tab:rq1} shows per-boundary detection results on EIP7702-Bench.
+
+\begin{table}[h]
+\centering
+\caption{Detection results by sandbox boundary}
+\label{tab:rq1}
+\begin{tabular}{lccccc}
+\hline
+\textbf{Boundary} & \textbf{Checks} & \textbf{TP} & \textbf{FP} & \textbf{FN} & \textbf{F1} \\
+\hline
+Identity    & 3 & 3 & 0 & 0 & 1.00 \\
+Code        & 3 & 3 & 0 & 0 & 1.00 \\
+Storage     & 3 & 3 & 0 & 0 & 1.00 \\
+Call        & 4 & 4 & 0 & 0 & 1.00 \\
+Validation  & 2 & 2 & 0 & 0 & 1.00 \\
+Replay      & 2 & 2 & 0 & 0 & 1.00 \\
+Revocation  & 2 & 2 & 0 & 0 & 1.00 \\
+Gas         & 2 & 2 & 0 & 0 & 1.00 \\
+\hline
+\textbf{Total} & \textbf{21} & \textbf{21} & \textbf{0} & \textbf{0} & \textbf{1.00} \\
+\hline
+\end{tabular}
+\end{table}
+
+On the controlled corpus, ChainEDR achieves \textbf{precision = 1.00, recall = 1.00, F1 = 1.00} in target-rule evaluation mode. All 21 vulnerable contracts trigger their expected check; all 21 fixed contracts suppress the corresponding check; and all 5 benign contracts pass their assigned negative-control checks.
+
+\textbf{Statistical significance.} Wilson score 95\% confidence intervals are [0.845, 1.000] for both precision and recall ($n=21$ vulnerable samples). One-sided binomial tests reject $H_0: P \leq 0.5$ and $H_0: R \leq 0.5$ at $p < 10^{-6}$. We note that with $n=1$ sample per detector, confidence intervals remain wide (width = 0.155); expanding to $n \geq 10$ per detector would narrow these. A McNemar test against a baseline detector (0 TP) yields $\chi^2 = 21.0$ ($p < 10^{-5}$), confirming ChainEDR's detection is statistically distinguishable from random.
+
+\subsection{RQ2: Competitor Comparison}
+
+We scan the same real-world targets with four widely-used Solidity analyzers (Table~\ref{tab:competitors}).
+
+\begin{table}[h]
+\centering
+\caption{EIP-7702 detection: tool comparison on production code (499 files, 60{,}407 LOC)}
+\label{tab:competitors}
+\begin{tabular}{lrrc}
+\hline
+\textbf{Tool} & \textbf{7702 Findings} & \textbf{Dedicated Checks} & \textbf{Bench Result} \\
+\hline
+ChainEDR 3.0    & 272 & 30 & 21/21 TP \\
+Slither 0.10    &   0 &  0 & N/A \\
+Aderyn 0.4      &   0 &  0 & N/A \\
+Mythril 0.24    &   0 &  0 & N/A \\
+Semgrep         &   0 &  0 & N/A \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Context.} The zero recall from existing tools is expected, not a deficiency in those tools: they were designed before EIP-7702 existed. Slither's 90+ detectors target generic Solidity patterns (reentrancy, access control, arithmetic); Mythril explores execution paths via symbolic execution. Neither encodes the semantic shift that EIP-7702 introduces---that assumptions about EOA behavior are no longer valid. A Slither reentrancy detector may flag an overlapping code pattern (e.g., ETH transfer without checks-effects-interactions), but it does not diagnose the \textit{delegation-specific} root cause or provide 7702-aware mitigation guidance. This comparison does not claim superiority over these tools in their respective domains; it demonstrates that EIP-7702 creates a new vulnerability surface that benefits from purpose-built detection.
+
+\subsection{RQ3: False Positive Rate}
+
+We measure FP rates on four target categories:
+
+\begin{itemize}
+    \item \textbf{Controlled corpus} (fixed + benign, 26 contracts): 0 target-rule FP out of 26 negative-class contracts. Specificity = 1.00.
+    \item \textbf{Production AA code} (117 files, delegation-framework + account-abstraction): 133 findings. Stratified sample (50 findings across all check categories) classifies 34 as TP (68\%), 6 as UNCERTAIN (12\%), and 10 as FP (20\%). FP sources: (a) chain\_id binding exists at the architecture level (domain separator) but not at the function level where the regex matches; (b) gas limits enforced by EntryPoint infrastructure rather than per-contract checks.
+    \item \textbf{General-purpose library} (OpenZeppelin Contracts v5.x~\cite{oz_contracts}, 350 files, 40{,}415 LOC): 113 findings across 9 check categories. Dominant patterns: AA7702-004 (chain\_id, 53), AA7702-002 (\texttt{isContract}, 23), AA7702-012 (gas griefing, 10). These represent genuine pre-7702 assumptions in widely-deployed code---OpenZeppelin's own documentation acknowledges that \texttt{Address.isContract()} is unreliable for account classification.
+    \item \textbf{7702-aware code} (Alchemy Modular Account V2~\cite{alchemy_modular}, 32 files): 26 findings. Triage: 1 TP (informational---\texttt{code.length==0} construction check in initializer), 25 FP. The 96.2\% FP rate on 7702-aware code is expected: these contracts \textit{intentionally} mitigate EIP-7702 risks through architectural patterns (ERC-7201 storage, chain-bound domain separators, blocked upgrades) that cross-file regex cannot recognize.
+\end{itemize}
+
+The production findings on \textit{pre-7702} code cluster around AA7702-004 (missing chain\_id validation, 104 instances across all targets) and AA7702-002 (\texttt{isContract}/\texttt{code.length} checks, 35 instances). ChainEDR's infrastructure-contract filter (excluding enforcer modules, factories, and registries from delegation-target checks) reduced false positives by 21 findings across the delegation-framework and Alchemy targets. On 7702-\textit{aware} code, the high FP rate validates that ChainEDR correctly fires on syntactic patterns but requires human analysis to determine whether architectural mitigations exist. Production findings are not counted as confirmed exploitable vulnerabilities without manual triage.
+
+\subsection{RQ4: Performance}
+
+\begin{table}[h]
+\centering
+\caption{Runtime performance}
+\label{tab:performance}
+\begin{tabular}{lr}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+Controlled corpus (47 files) & $<$0.1s \\
+OpenZeppelin v5 (350 files, 40K LOC) & 6.1s \\
+delegation-framework (60 files) & $<$1s \\
+account-abstraction (57 files) & $<$1s \\
+modular-account-v2 (32 files) & $<$0.1s \\
+CI suitability & pull-request scale \\
+Peak memory & $<$50 MB \\
+\hline
+\end{tabular}
+\end{table}
+
+ChainEDR's regex-based detection has negligible memory overhead. The entire 499-file scan across four targets completes in under 8 seconds, well within CI pull-request budgets.
+
+\subsection{RQ5: Case Study---Production Code}
+
+We scan four production codebases spanning account abstraction and general-purpose Solidity libraries: MetaMask's Delegation Framework~\cite{metamask_delegation} (60 files), eth-infinitism's ERC-4337 reference~\cite{eth_infinitism} (57 files), Alchemy's Modular Account V2~\cite{alchemy_modular} (32 files)---the first production EIP-7702-aware account implementation---and OpenZeppelin Contracts v5.x~\cite{oz_contracts} (350 files), the most widely deployed Solidity library. Table~\ref{tab:casestudy} summarizes findings by severity.
+
+\begin{table}[h]
+\centering
+\caption{Production findings by severity (4 targets, 499 files, 60{,}407 LOC)}
+\label{tab:casestudy}
+\begin{tabular}{lrrrrr}
+\hline
+\textbf{Target} & \textbf{Files} & \textbf{CRIT} & \textbf{HIGH} & \textbf{MED} & \textbf{7702-aware?} \\
+\hline
+OpenZeppelin v5         & 350 &  0 & 43 &  70 & No \\
+delegation-framework    &  60 &  2 & 19 &  50 & No \\
+account-abstraction     &  57 &  1 & 42 &  19 & No \\
+modular-account-v2      &  32 &  1 & 13 &  12 & \textbf{Yes} \\
+\hline
+\textbf{Total}          & \textbf{499} & \textbf{4} & \textbf{117} & \textbf{151} & \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{CRITICAL triage.} We manually verified all 4 CRITICAL findings:
+
+\begin{enumerate}
+    \item \textbf{AA7702-009} (delegation-framework, 2 instances): DeleGatorCore and EIP7702DeleGatorCore use ERC-1967 proxy storage. For DeleGatorCore (the pre-7702 variant), this is a genuine design concern---proxy admin slots map to the EOA's storage when delegated. MetaMask addressed this by building a separate 7702-specific variant without UUPS upgradeability, confirming the pattern's relevance.
+    \item \textbf{AA7702-001} (account-abstraction): The ERC-4337 EntryPoint's \texttt{nonReentrant} modifier uses \texttt{tx.origin == msg.sender \&\& msg.sender.code.length == 0}. The double-check confirms that \texttt{tx.origin == msg.sender} alone is insufficient post-7702. This is an intentional design choice that blocks delegated EOAs from calling \texttt{handleOps} to prevent callback reentrancy.
+    \item \textbf{AA7702-002} (modular-account-v2): \texttt{code.length == 0} construction check in the initializer evaluates differently for delegated EOAs (informational severity; blocks re-initialization, which is safe behavior).
+\end{enumerate}
+
+On pre-7702 code, dominant findings include missing chain\_id validation (AA7702-004, 104 instances across all targets), \texttt{isContract}/\texttt{code.length} checks that no longer distinguish EOAs from contracts (AA7702-002, 35 instances), and storage collision risks in delegation modules without ERC-7201 namespacing (AA7702-007, 12 instances). On OpenZeppelin specifically, the \texttt{Address.isContract()} utility (AA7702-002) and \texttt{ecrecover}-only signature verification without EIP-1271 fallback (AA7702-016) represent patterns that the library's own documentation acknowledges as assumptions.
+
+On the 7702-aware Alchemy codebase (audited by ChainLight and Quantstamp), manual triage reveals that 25 of 26 findings are FP because architectural mitigations (ERC-7201 storage, chain-bound domain separators, blocked upgrades) exist across the call graph. The single TP is a \texttt{code.length == 0} construction check in the initializer that evaluates differently for delegated EOAs (informational severity). This contrast---high TP rate on pre-7702 code, high FP rate on 7702-aware code---validates ChainEDR's design: it correctly identifies the \textit{syntactic} patterns that require mitigation, leaving \textit{semantic} verification to human reviewers.

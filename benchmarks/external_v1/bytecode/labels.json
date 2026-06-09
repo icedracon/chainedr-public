@@ -1,0 +1,41 @@
+{
+  "name": "chainedr_external_bytecode_v1",
+  "version": "1.0.0",
+  "description": "External bytecode benchmark — runtime bytecode fetched live from mainnet via eth_getCode for verified deployed contracts. None of these bytes were authored by the ChainEDR maintainers. Each label records what `detect_bytecode_aa7702()` fires on the runtime + the maintainer triage verdict + the on-chain source so a reviewer can re-fetch.",
+  "fetch_method": "curl POST eth_getCode against https://ethereum-rpc.publicnode.com",
+  "policy": "Verdicts are: TP (real signal worth surfacing), ARCH (architecture advisory the bytecode-level rule is meant to surface — typically infrastructure that legitimately uses the flagged opcode), FP (false positive needing a future detector fix), or N/A (clean bytecode, no AA7702-* finding expected).",
+  "samples": [
+    {
+      "id": "bb9_7702_delegator",
+      "address": "0x27dbd0e71b85700e29994d6d3a51f2e32442aa61",
+      "path": "BB9_7702_Delegator.hex",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Known 7702 delegator implementation (1,511 live delegations per Path-A hunt). Compact 789-byte runtime; the implementation has no tx.origin / extcodesize / delegatecall patterns at the opcode level."
+    },
+    {
+      "id": "entrypoint_v07",
+      "address": "0x0000000071727De22E5E9d8BAf0edAc6f37da032",
+      "path": "EntryPoint_v07.hex",
+      "fires": ["AA7702-002", "AA7702-006", "AA7702-015"],
+      "verdict": "ARCH",
+      "rationale": "ERC-4337 EntryPoint v0.7. As infrastructure, EntryPoint legitimately uses EXTCODESIZE (target validation), DELEGATECALL (account-bound execution), and SELFDESTRUCT machinery. At the source level the AA infrastructure filter excludes these. The bytecode-mode detector cannot recover that file-level context — it surfaces the raw opcodes as architecture advisories a reviewer should manually classify."
+    },
+    {
+      "id": "ithaca_account_mainnet",
+      "address": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
+      "path": "Ithaca_Account_Mainnet.hex",
+      "fires": ["AA7702-002", "AA7702-006"],
+      "verdict": "ARCH",
+      "rationale": "Ithaca Account on mainnet. The bytecode contains code.length / extcodehash checks (likely 1271 routing) and delegatecall (executor path). At the source level (P33) we already flagged Ithaca with AA7702-012 + AA7702-013 advisories — the bytecode-level fires are consistent: real architecture surface, not exploits."
+    },
+    {
+      "id": "permit2_deployed",
+      "address": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "path": "Permit2_Deployed.hex",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Uniswap Permit2 deployed on mainnet. AA7702-010 fired at the SOURCE level (signature replay surface), but the opcode patterns AA7702-001 / 002 / 006 / 015 do not appear. Source-mode is the right detector for this class; bytecode-mode complementing it correctly stays silent."
+    }
+  ]
+}

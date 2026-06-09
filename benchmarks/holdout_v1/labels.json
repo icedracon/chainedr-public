@@ -1,0 +1,158 @@
+{
+  "name": "chainedr_holdout_v1",
+  "version": "1.1.0",
+  "description": "Held-out micro-corpus for evaluating ChainEDR generalisation. Samples were authored after the labelled training corpus was frozen and were not used to tune detector regexes, modifier sets, inline-auth patterns, alias-flow rules, or any other detector logic.",
+  "policy": "Each sample has one or zero expected rule fires. False positives outside the expected_rule are recorded but do not count against recall.",
+  "samples": [
+    {
+      "id": "01_oz_ownable_withdraw",
+      "path": "samples/01_oz_ownable_withdraw.sol",
+      "expected_rule": null,
+      "rationale": "onlyOwner modifier gates the function; tx.origin == msg.sender is defence-in-depth on an access-controlled surface. AA7702-001 should NOT fire after modifier-aware suppression."
+    },
+    {
+      "id": "02_naked_tx_origin",
+      "path": "samples/02_naked_tx_origin.sol",
+      "expected_rule": "AA7702-001",
+      "rationale": "Unguarded public function gates on tx.origin == msg.sender. Classic flash-loan guard broken by 7702."
+    },
+    {
+      "id": "03_aliased_eoa_check",
+      "path": "samples/03_aliased_eoa_check.sol",
+      "expected_rule": "AA7702-001",
+      "rationale": "Aliased equivalent of tx.origin == msg.sender via local variables. Intra-function alias-flow pass must catch this."
+    },
+    {
+      "id": "04_state_var_eoa_flow",
+      "path": "samples/04_state_var_eoa_flow.sol",
+      "expected_rule": "AA7702-001",
+      "rationale": "tx.origin stored in state by one function, compared against msg.sender in another. Cross-function state-flow pass must catch this."
+    },
+    {
+      "id": "05_inline_owner_then_eoa",
+      "path": "samples/05_inline_owner_then_eoa.sol",
+      "expected_rule": null,
+      "rationale": "require(msg.sender == owner) inline auth check makes the function effectively gated. Inline-auth suppression must keep AA7702-001 silent."
+    },
+    {
+      "id": "06_iscontract_public",
+      "path": "samples/06_iscontract_public.sol",
+      "expected_rule": "AA7702-002",
+      "rationale": "code.length == 0 check on an unguarded public function; airdrop / receive-hook anti-pattern broken under 7702."
+    },
+    {
+      "id": "07_iscontract_in_onlyrole",
+      "path": "samples/07_iscontract_in_onlyrole.sol",
+      "expected_rule": null,
+      "rationale": "code.length check inside an onlyRole-gated function. Modifier-aware suppression must keep AA7702-002 silent."
+    },
+    {
+      "id": "08_clean_math",
+      "path": "samples/08_clean_math.sol",
+      "expected_rule": null,
+      "rationale": "Pure utility library with no auth and no 7702-relevant patterns. Nothing should fire."
+    },
+    {
+      "id": "09_delegatecall_unguarded",
+      "path": "samples/09_delegatecall_unguarded.sol",
+      "expected_rule": "AA7702-006",
+      "rationale": "Delegation-target shape with an unguarded delegatecall. AA7702-006 should fire."
+    },
+    {
+      "id": "10_permit_no_delegation_check",
+      "path": "samples/10_permit_no_delegation_check.sol",
+      "expected_rule": "AA7702-010",
+      "rationale": "ERC-20 permit without delegation-aware check. AA7702-010 should fire."
+    },
+    {
+      "id": "11_uups_authorize_upgrade_guarded",
+      "path": "samples/11_uups_authorize_upgrade_guarded.sol",
+      "expected_rule": null,
+      "rationale": "UUPS-style upgrade gated by onlyOwner; ERC-1967 proxy slot read is the standard upgrade mechanic. AA7702-009 must NOT fire."
+    },
+    {
+      "id": "12_recallable_initialize",
+      "path": "samples/12_recallable_initialize.sol",
+      "expected_rule": "AA7702-008",
+      "rationale": "Initializer with no init-flag guard; under 7702 any third party can re-point owner on a fresh EOA storage context."
+    },
+    {
+      "id": "13_chainid_zero_auth",
+      "path": "samples/13_chainid_zero_auth.sol",
+      "expected_rule": "AA7702-004",
+      "rationale": "Authorization digest binds chain_id = 0 explicitly; cross-chain replay enabled."
+    },
+    {
+      "id": "14_eip712_chain_bound",
+      "path": "samples/14_eip712_chain_bound.sol",
+      "expected_rule": null,
+      "rationale": "EIP-712 domain separator binds block.chainid; cross-chain replay structurally prevented. AA7702-004 must NOT fire."
+    },
+    {
+      "id": "15_erc7201_namespaced",
+      "path": "samples/15_erc7201_namespaced.sol",
+      "expected_rule": null,
+      "rationale": "ERC-7201 namespaced storage layout. AA7702-007 / AA7702-020 must NOT fire."
+    },
+    {
+      "id": "16_raw_storage_delegation_target",
+      "path": "samples/16_raw_storage_delegation_target.sol",
+      "expected_rule": "AA7702-020",
+      "rationale": "SmartAccount delegation target with raw, non-namespaced storage. Redelegation collides with next target's layout."
+    },
+    {
+      "id": "17_selfdestruct_delegation",
+      "path": "samples/17_selfdestruct_delegation.sol",
+      "expected_rule": "AA7702-015",
+      "rationale": "Delegation target contains selfdestruct path — executes in delegated EOA context, clears the EOA."
+    },
+    {
+      "id": "18_single_relayer_hardcoded",
+      "path": "samples/18_single_relayer_hardcoded.sol",
+      "expected_rule": "AA7702-019",
+      "rationale": "Hardcoded single relayer with no fallback — single point of failure for account liveness."
+    },
+    {
+      "id": "19_multi_relayer_set",
+      "path": "samples/19_multi_relayer_set.sol",
+      "expected_rule": null,
+      "rationale": "Multi-relayer set with owner-managed add/remove; account remains usable if any relayer is reachable."
+    },
+    {
+      "id": "20_entrypoint_v06_hardcoded",
+      "path": "samples/20_entrypoint_v06_hardcoded.sol",
+      "expected_rule": "AA7702-021",
+      "rationale": "EntryPoint v0.6 hardcoded; breaks for users on v0.7+."
+    },
+    {
+      "id": "21_eth_send_to_owner_guarded",
+      "path": "samples/21_eth_send_to_owner_guarded.sol",
+      "expected_rule": null,
+      "rationale": "ETH send to owner from an onlyOwner function; self-harm scenario, suppressed by access-gating in AA7702-003."
+    },
+    {
+      "id": "22_eth_send_with_eoa_assumption",
+      "path": "samples/22_eth_send_with_eoa_assumption.sol",
+      "expected_rule": "AA7702-002",
+      "rationale": "User-supplied recipient with isContract check; broken under EIP-7702 (delegated EOA has nonzero code.length)."
+    },
+    {
+      "id": "23_interface_only",
+      "path": "samples/23_interface_only.sol",
+      "expected_rule": null,
+      "rationale": "Pure interface; cannot hold a runtime vuln. _is_interface_file must keep every detector silent."
+    },
+    {
+      "id": "24_governance_inline_check",
+      "path": "samples/24_governance_inline_check.sol",
+      "expected_rule": null,
+      "rationale": "Inline governance auth check; the tx.origin defence-in-depth comparison sits in a gated function. Inline-auth suppression must keep AA7702-001 silent."
+    },
+    {
+      "id": "25_oz_ownable_inherit_clean",
+      "path": "samples/25_oz_ownable_inherit_clean.sol",
+      "expected_rule": null,
+      "rationale": "Contract that inherits Ownable and uses onlyOwner throughout. No 7702-relevant patterns; nothing should fire."
+    }
+  ]
+}

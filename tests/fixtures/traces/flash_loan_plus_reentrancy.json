@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "slug": "flash_loan_plus_reentrancy",
+    "name": "Flash loan + reentrancy combo",
+    "category": "COMBO",
+    "contract": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "expect": {
+      "flash_loan": true,
+      "reentrancy": true,
+      "reentrancy_exploitable": true,
+      "is_critical": true
+    }
+  },
+  "tx": {
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "blockNumber": 18000000,
+    "trace_format": "geth"
+  },
+  "trace": {
+    "type": "CALL",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "gas": "0x7a120",
+    "gasUsed": "0x5dc00",
+    "input": "0xdeadbeef",
+    "output": "0x1",
+    "calls": [
+      {
+        "type": "CALL",
+        "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "to": "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9",
+        "value": "0x0",
+        "gas": "0x60000",
+        "gasUsed": "0x50000",
+        "input": "0xab9c4b5d",
+        "output": "0x1",
+        "calls": [
+          {
+            "type": "CALL",
+            "from": "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9",
+            "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+            "value": "0x0",
+            "gas": "0x50000",
+            "gasUsed": "0x40000",
+            "input": "0x920f5c840000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "0x1",
+            "calls": [
+              {
+                "type": "CALL",
+                "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+                "to": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "value": "0xde0b6b3a7640000",
+                "gas": "0x30000",
+                "gasUsed": "0x20000",
+                "input": "0x",
+                "output": "0x1",
+                "calls": [
+                  {
+                    "type": "CALL",
+                    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+                    "value": "0x0",
+                    "gas": "0x20000",
+                    "gasUsed": "0x10000",
+                    "input": "0x920f5c84",
+                    "output": "0x1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logs": []
+}

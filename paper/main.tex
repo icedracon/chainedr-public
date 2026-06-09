@@ -1,0 +1,64 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{balance}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  language=Solidity,
+  numbers=left,
+  numberstyle=\tiny,
+}
+
+\begin{document}
+
+\title{Static Detection of EIP-7702 Delegation Vulnerabilities in Smart Contracts}
+
+\author{
+  \IEEEauthorblockN{Zorayr Saroyan}
+  \IEEEauthorblockA{
+    ITMO University\\
+    Saint Petersburg, Russia\\
+    zorayrsaroyan13@gmail.com
+  }
+}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/01_abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+smart contracts, EIP-7702, account abstraction, static analysis, delegation, security, vulnerability detection
+\end{IEEEkeywords}
+
+\input{sections/02_introduction}
+\input{sections/03_background}
+\input{sections/04_threat_model}
+\input{sections/05_methodology}
+\input{sections/06_implementation}
+\input{sections/07_evaluation}
+\input{sections/08_discussion}
+\input{sections/09_related_work}
+\input{sections/10_conclusion}
+
+\section*{Acknowledgments}
+The author thanks the ITMO University Faculty of Information Technologies and Programming for supervision, and acknowledges the use of Anthropic Claude Code for development acceleration. Special thanks to ERR-X404 for early feedback on the sandbox boundary model.
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

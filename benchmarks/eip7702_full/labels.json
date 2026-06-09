@@ -1,0 +1,321 @@
+{
+  "vulnerable/AA7702_001_TxOriginAuth.sol": {
+    "expected_findings": [
+      "AA7702-001"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_002_CodeLengthGuard.sol": {
+    "expected_findings": [
+      "AA7702-002"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_003_CallbackReentrancy.sol": {
+    "expected_findings": [
+      "AA7702-003"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_004_CrossChainReplay.sol": {
+    "expected_findings": [
+      "AA7702-004"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_005_NoRevocation.sol": {
+    "expected_findings": [
+      "AA7702-005"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_006_DelegatecallEscape.sol": {
+    "expected_findings": [
+      "AA7702-006"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_007_StorageCollision.sol": {
+    "expected_findings": [
+      "AA7702-007"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_008_InitRace.sol": {
+    "expected_findings": [
+      "AA7702-008"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_009_ProxyConflict.sol": {
+    "expected_findings": [
+      "AA7702-009"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_010_PermitBypass.sol": {
+    "expected_findings": [
+      "AA7702-010"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_011_BatchReplay.sol": {
+    "expected_findings": [
+      "AA7702-011"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_012_NonceGap.sol": {
+    "expected_findings": [
+      "AA7702-012"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_013_GasGriefing.sol": {
+    "expected_findings": [
+      "AA7702-013"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_014_ValueTransferHook.sol": {
+    "expected_findings": [
+      "AA7702-014"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_015_SelfdestructTarget.sol": {
+    "expected_findings": [
+      "AA7702-015"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_016_EcrecoverOnly.sol": {
+    "expected_findings": [
+      "AA7702-016"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_017_ERC777Hook.sol": {
+    "expected_findings": [
+      "AA7702-017"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_018_ApproveFrontrun.sol": {
+    "expected_findings": [
+      "AA7702-018"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_019_SingleRelayer.sol": {
+    "expected_findings": [
+      "AA7702-019"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_020_RawStorage.sol": {
+    "expected_findings": [
+      "AA7702-020"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "vulnerable/AA7702_021_EntryPointV06.sol": {
+    "expected_findings": [
+      "AA7702-021"
+    ],
+    "category": "vulnerable",
+    "must_detect": true
+  },
+  "fixed/AA7702_001_TxOriginAuth_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-001"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_002_CodeLengthGuard_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-002"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_003_CallbackReentrancy_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-003"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_004_CrossChainReplay_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-004"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_005_NoRevocation_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-005"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_006_DelegatecallEscape_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-006"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_007_StorageCollision_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-007"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_008_InitRace_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-008"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_009_ProxyConflict_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-009"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_010_PermitBypass_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-010"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_011_BatchReplay_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-011"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_012_NonceGap_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-012"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_013_GasGriefing_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-013"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_014_ValueTransferHook_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-014"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_015_SelfdestructTarget_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-015"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_016_EcrecoverOnly_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-016"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_017_ERC777Hook_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-017"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_018_ApproveFrontrun_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-018"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_019_SingleRelayer_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-019"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_020_RawStorage_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-020"
+    ],
+    "category": "fixed"
+  },
+  "fixed/AA7702_021_EntryPointV06_fixed.sol": {
+    "expected_findings": [],
+    "must_not_detect": [
+      "AA7702-021"
+    ],
+    "category": "fixed"
+  },
+  "benign/MerkleAirdrop.sol": {
+    "expected_findings": [],
+    "category": "benign",
+    "max_findings": 0
+  },
+  "benign/SimpleERC20.sol": {
+    "expected_findings": [],
+    "category": "benign",
+    "max_findings": 0
+  },
+  "benign/SimpleMultisig.sol": {
+    "expected_findings": [],
+    "category": "benign",
+    "max_findings": 0
+  },
+  "benign/SimpleVault.sol": {
+    "expected_findings": [],
+    "category": "benign",
+    "max_findings": 0
+  },
+  "benign/Timelock.sol": {
+    "expected_findings": [],
+    "category": "benign",
+    "max_findings": 0
+  }
+}

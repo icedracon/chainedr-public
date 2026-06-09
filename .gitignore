@@ -1,0 +1,97 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.db
+*.db-journal
+.env
+.env.*
+!.env.example
+.secrets
+*.pem
+*.key
+*.token
+*.p12
+*.pfx
+_private/
+batch_results/
+doppler_full/
+doppler_audit/
+derc20_poc/
+ample_poc/
+infinifi_audit/
+chronicle_audit/
+archive/
+data/stableswap/
+data/monetrix/
+data/worldcoin/
+data/chainlink/
+data/circle/
+data/arc*/
+data/usdai/
+data/cantina_tests/
+reports/
+results/
+out/
+demo_out/
+evidence_bundle.md
+*.sarif
+*.log
+src/audit/
+src/benchmark/
+src/foundry/
+src/generated/
+src/references/
+src/ripio_batch_scan.py
+src/ripio_deep_audit.py
+src/infinifi_extract.py
+src/*.json
+src/*.sh
+src/Untitled*
+COMMERCIAL_CHANGELOG.md
+test_targets/
+chainedr.json
+chainedr.sarif
+.chainedr.toml
+
+# Reality-check (Stage 1) cloned target repos — large external clones, evidence kept separately
+test_targets/reality_check/*/
+
+# Held-out bounty codebases — large external clones, evidence kept separately
+test_targets/holdout/*/
+
+# On-chain fetched verified sources (per-contract) — keep fetcher, not sources
+test_targets/onchain/*/
+test_targets/onchain/_*.json
+
+# Internal planning / session docs (kept local, not in public repo)
+ROADMAP.md
+PHASE0_REPORT.md
+PLAN_*.md
+PAPER_PLAN.md
+# Build / scan artifacts (regenerable)
+*_results.json
+**/_results/
+cli_out.txt
+cli_stderr.txt
+chainedr.json
+chainedr.sarif
+
+# build artifacts (stale duplicate package)
+build/
+src/build/
+*.egg-info/
+
+# generated analysis artifacts (regenerable via scripts)
+data/
+validation_data.json
+# forge build artifacts under poc/
+poc/*/out/
+poc/*/cache/
+poc/*/broadcast/
+real_7702_scan/_scan_*.json
+real_7702_scan/_prove_out/
+real_7702_scan/_prove_all/
+docs/external_benchmark.json
+real_7702_scan/

@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "slug": "real_dao_2016",
+    "name": "The DAO",
+    "category": "REENTRANCY",
+    "contract": "0xbb9bc244d798123fde783fcc1c72d3bb8c189413",
+    "expect": {
+      "reentrancy": true
+    },
+    "source": "etherscan"
+  },
+  "tx": {
+    "hash": "0x0ec3f2488a93839524add10ea229e773f6bc891b4eb4794c3571d8571607b19d",
+    "from": "",
+    "to": "",
+    "value": "0x0",
+    "blockNumber": 0,
+    "input": "0x",
+    "gas": "0x0"
+  },
+  "trace": {
+    "type": "CALL",
+    "from": "",
+    "to": "",
+    "value": "0x0",
+    "input": "0x",
+    "output": "0x",
+    "gas": "0x0",
+    "gasUsed": "0x0",
+    "error": "",
+    "revertReason": "",
+    "calls": []
+  },
+  "logs": []
+}

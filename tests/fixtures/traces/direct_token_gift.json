@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "slug": "direct_token_gift",
+    "name": "ERC4626 donation attack",
+    "category": "DONATION",
+    "contract": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "expect": {
+      "direct_token_gift": true
+    }
+  },
+  "tx": {
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "blockNumber": 18000000,
+    "trace_format": "geth"
+  },
+  "trace": {
+    "type": "CALL",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+    "value": "0x0",
+    "gas": "0x7a120",
+    "gasUsed": "0x5dc00",
+    "input": "0xa9059cbb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "output": "0x1"
+  },
+  "logs": [
+    {
+      "address": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "0x000000000000000000000000b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+      ],
+      "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+      "logIndex": 0
+    }
+  ]
+}

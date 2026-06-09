@@ -1,0 +1,62 @@
+{
+  "name": "EIP7702-Bench",
+  "version": "1.0.0",
+  "description": "Labeled benchmark corpus for EIP-7702 vulnerability detection evaluation",
+  "created": "2026-05-28",
+  "categories": {
+    "vulnerable": {
+      "count": 21,
+      "description": "One contract per AA7702 check \u2014 must trigger expected finding"
+    },
+    "fixed": {
+      "count": 21,
+      "description": "Patched versions \u2014 must NOT trigger the specific check"
+    },
+    "benign": {
+      "count": 5,
+      "description": "Clean DeFi primitives \u2014 must produce zero findings"
+    }
+  },
+  "checks_covered": [
+    "AA7702-001",
+    "AA7702-002",
+    "AA7702-003",
+    "AA7702-004",
+    "AA7702-005",
+    "AA7702-006",
+    "AA7702-007",
+    "AA7702-008",
+    "AA7702-009",
+    "AA7702-010",
+    "AA7702-011",
+    "AA7702-012",
+    "AA7702-013",
+    "AA7702-014",
+    "AA7702-015",
+    "AA7702-016",
+    "AA7702-017",
+    "AA7702-018",
+    "AA7702-019",
+    "AA7702-020",
+    "AA7702-021"
+  ],
+  "boundaries_covered": [
+    "identity",
+    "code",
+    "storage",
+    "call",
+    "validation",
+    "replay",
+    "revocation",
+    "gas"
+  ],
+  "evaluation_results": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tp": 21,
+    "fp": 0,
+    "fn": 0,
+    "tn": 26
+  }
+}

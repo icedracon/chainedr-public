@@ -1,0 +1,69 @@
+name: ChainEDR Analyzer
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    paths:
+      - 'contracts/**/*.sol'
+      - '**/*.nr'
+  workflow_dispatch:
+
+jobs:
+  chainedr-analyzer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: ChainEDR Analyzer Scan
+        id: chainedr
+        uses: icedracon/chainedr/plugins/github-action@master
+        with:
+          contracts-path: contracts/
+          min-severity: MEDIUM
+          fail-on: HIGH
+          deep: true
+          output-sarif: true
+
+      - name: Comment findings on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('chainedr.json')) {
+              return;
+            }
+            const data = JSON.parse(fs.readFileSync('chainedr.json', 'utf8'));
+            const findings = Array.isArray(data) ? data : (data.findings || []);
+            const counts = findings.reduce((acc, f) => {
+              const sev = f.severity || 'UNKNOWN';
+              acc[sev] = (acc[sev] || 0) + 1;
+              return acc;
+            }, {});
+            let body = `## ChainEDR Analyzer Report\n\n`;
+            body += `Findings: **${findings.length}**\n\n`;
+            body += `| Severity | Count |\n|---|---:|\n`;
+            for (const sev of ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']) {
+              if (counts[sev]) body += `| ${sev} | ${counts[sev]} |\n`;
+            }
+            body += `\nSee the workflow artifact and Code Scanning results for details.`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

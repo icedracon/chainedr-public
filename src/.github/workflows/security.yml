@@ -1,0 +1,110 @@
+name: ChainEDR Security Audit
+
+on:
+  push:
+    paths:
+      - '**.sol'
+      - '.github/workflows/security.yml'
+  pull_request:
+    paths:
+      - '**.sol'
+  workflow_dispatch:
+    inputs:
+      min_severity:
+        description: 'Minimum severity (CRITICAL|HIGH|MEDIUM|LOW)'
+        required: false
+        default: 'HIGH'
+
+permissions:
+  contents: read
+  security-events: write   # for SARIF upload
+
+jobs:
+  chainedr-audit:
+    name: ChainEDR Static Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install solc-select + solc
+        run: |
+          pip install solc-select
+          solc-select install 0.8.24
+          solc-select use 0.8.24
+
+      - name: Install Slither (optional, best-effort)
+        run: pip install slither-analyzer || true
+
+      - name: Install ChainEDR
+        run: |
+          pip install web3 eth-abi packaging
+          pip install -e . || pip install -r requirements.txt || true
+
+      - name: Run ChainEDR audit
+        id: audit
+        run: |
+          MIN_SEV="${{ github.event.inputs.min_severity || 'HIGH' }}"
+          python -m chainedr audit \
+            $(find . -name '*.sol' \
+              ! -path '*/node_modules/*' \
+              ! -path '*/lib/*' \
+              ! -path '*/test*' \
+              ! -name '*.t.sol' \
+              | head -50 | tr '\n' ' ') \
+            --min-severity "$MIN_SEV" \
+            --format sarif \
+            --output results.sarif \
+          || true
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+          category: chainedr
+
+      - name: Run extended checks (xcheck)
+        if: always()
+        run: |
+          SOL_FILES=$(find . -name '*.sol' \
+            ! -path '*/node_modules/*' \
+            ! -path '*/lib/*' \
+            ! -name '*.t.sol' \
+            | head -30 | tr '\n' ' ')
+          if [ -n "$SOL_FILES" ]; then
+            python -m chainedr xcheck $SOL_FILES || true
+          fi
+
+      - name: Fail on CRITICAL/HIGH findings
+        run: |
+          python -m chainedr audit \
+            $(find . -name '*.sol' \
+              ! -path '*/node_modules/*' \
+              ! -path '*/lib/*' \
+              ! -name '*.t.sol' \
+              | head -50 | tr '\n' ' ') \
+            --min-severity HIGH \
+            --format json \
+            --output findings.json \
+          ; exit_code=$?
+          if [ -f findings.json ]; then
+            HIGH=$(python -c "
+          import json, sys
+          d = json.load(open('findings.json'))
+          h = sum(1 for f in d.get('findings',[]) if f['severity'] in ('CRITICAL','HIGH'))
+          print(h)
+          ")
+            echo "HIGH/CRITICAL findings: $HIGH"
+            if [ "$HIGH" -gt 0 ]; then
+              echo "::error::ChainEDR found $HIGH HIGH/CRITICAL issue(s)"
+              exit 1
+            fi
+          fi

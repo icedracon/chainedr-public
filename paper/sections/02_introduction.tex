@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:introduction}
+
+On May 7, 2025, Ethereum activated the Pectra upgrade, introducing EIP-7702~\cite{eip7702}---a mechanism that allows externally owned accounts (EOAs) to temporarily delegate code execution to smart contracts. For the first time, a plain Ethereum address controlled by a private key can execute arbitrary contract logic, receive callbacks, and maintain persistent storage. This collapses the fundamental EOA/contract distinction that Solidity developers have relied upon for over eight years.
+
+The security implications are immediate and pervasive. Patterns such as \texttt{require(tx.origin == msg.sender)}, \texttt{isContract()} checks, and the assumption that \texttt{.transfer()} to an EOA cannot trigger a callback---all become unreliable after EIP-7702. Yet mainstream static analysis tools do not currently ship dedicated checks for these newly introduced vulnerability classes.
+
+We surveyed five widely used Solidity analyzers---Slither~\cite{slither}, Aderyn, Mythril~\cite{mythril}, Semgrep, and Securify~\cite{securify}---and found no dedicated EIP-7702 detector coverage in the evaluated configurations. When run against production account abstraction code, these tools report generic findings (reentrancy, unused variables) but identify zero EIP-7702-specific risks. This gap is critical: the Ethereum ecosystem deployed EIP-7702 in May 2025, and existing smart contracts may now be exposed to assumptions that were previously safe.
+
+\textbf{Contributions.} We make three contributions:
+
+\begin{enumerate}
+    \item \textbf{Sandbox boundary taxonomy.} We define a systematic model of eight security boundaries broken by EIP-7702 delegation (identity, code, storage, call, validation, replay, revocation, gas), each with pre/post-7702 assumption pairs, and classify 30 concrete vulnerability patterns (21 delegation + 9 validation scope) with CWE mappings.
+
+    \item \textbf{ChainEDR static analyzer.} We implement an EIP-7702-aware static analysis tool using source-level pattern matching with context-sensitive filtering and a \textit{PreBehaviorTrace} evidence model that captures the causal chain from broken assumption to exploitable behavior.
+
+    \item \textbf{Evaluation.} We construct \textit{EIP7702-Bench} (57 labeled contracts) and evaluate ChainEDR against four competitor tools on both controlled and production code. ChainEDR achieves F1\,=\,1.00 in target-rule evaluation mode on the controlled corpus (Wilson 95\% CI: [0.845,\,1.000]) and identifies 272 EIP-7702-specific findings across four production codebases (499 files) that require manual triage.
+\end{enumerate}
+
+\textbf{Paper organization.} Section~\ref{sec:background} provides EIP-7702 background. Section~\ref{sec:threat_model} presents the sandbox boundary taxonomy. Section~\ref{sec:methodology} describes the detection methodology. Section~\ref{sec:implementation} details the ChainEDR implementation. Section~\ref{sec:evaluation} presents evaluation results. Section~\ref{sec:discussion} discusses limitations and threats to validity. Sections~\ref{sec:related_work} and~\ref{sec:conclusion} cover related work and conclusions.

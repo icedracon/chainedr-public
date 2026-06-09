@@ -1,0 +1,30 @@
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Detection Approach}
+
+ChainEDR uses source-level regex pattern matching with context-sensitive filtering rather than AST or bytecode analysis. This design choice offers three advantages: (1) no Solidity compilation required---ChainEDR works on any \texttt{.sol} file regardless of compiler version or import resolution; (2) runtime remains low enough for pull-request CI workflows in our benchmark runs; (3) patterns are human-readable and auditable, reducing the ``black box'' problem of symbolic execution tools.
+
+Each of the 30 checks follows a three-stage pipeline:
+
+\begin{enumerate}
+    \item \textbf{Pattern match}: A compiled regex identifies the vulnerable code pattern (e.g., \texttt{tx.origin\textbackslash{}s*==\textbackslash{}s*msg.sender}).
+    \item \textbf{Context validation}: Surrounding code is analyzed to confirm the pattern is delegation-relevant. For example, AA7702-006 (delegatecall in delegation target) only fires if the file also matches \texttt{\_EIP7702\_TARGET\_RE}, confirming the contract is a delegation target.
+    \item \textbf{Evidence generation}: A \textit{PreBehaviorTrace} is constructed, linking the matched pattern to the specific sandbox boundary violation and bypass class.
+\end{enumerate}
+
+\subsection{Context Filtering}
+
+To reduce false positives, many checks gate on \textit{delegation context}: the source must contain keywords indicating it is an EIP-7702 delegation target (e.g., ``delegation'', ``7702'', ``executeAs'', ``AccountDelegation''), and must not match infrastructure-contract patterns (e.g., contracts named \texttt{*Enforcer}, \texttt{*Module}, \texttt{*Factory}, \texttt{*Manager}) that reference delegation via imports but are not themselves delegation targets. Checks that detect universally-broken assumptions (e.g., AA7702-001 \texttt{tx.origin} check) fire without this gate, since all contracts are affected regardless of whether they are delegation targets.
+
+\subsection{Confidence Scoring}
+
+Each finding includes a calibrated confidence score (0.0--1.0) based on pattern specificity and context richness. For example, \texttt{require(tx.origin == msg.sender)} in a function named \texttt{onlyEOA} receives confidence 0.95, while an ETH transfer with only variable-name context (``recipient'') receives 0.60. These scores enable downstream filtering by risk tolerance.
+
+\subsection{False Positive Filtering}
+
+ChainEDR includes a 14-rule false positive filter (1,107 LOC) that classifies each finding into three verdict categories: REAL (high-confidence true positive), UNCERTAIN (requires manual triage), and FP (suppressed). Filter rules check for common safe patterns---e.g., a \texttt{tx.origin} usage inside an \texttt{onlyOwner} context is unlikely to be exploitable. Findings are labeled, not hidden: the user sees all findings with their verdict, preserving auditability.
+
+\subsection{Orchestration Model}
+
+ChainEDR integrates with Slither~\cite{slither} as an orchestrated backend for generic Solidity analysis. When both tools flag the same location, a cross-tool deduplication layer prefers the specialist (EIP-7702) finding over the generic one. This ensures users see the most actionable diagnosis without duplicate noise.

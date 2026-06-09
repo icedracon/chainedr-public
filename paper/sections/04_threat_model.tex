@@ -1,0 +1,80 @@
+\section{Threat Taxonomy}
+\label{sec:threat_model}
+
+We model EIP-7702 vulnerabilities as \textit{sandbox boundary violations}. Each boundary represents a pre-7702 security assumption that developers encode into Solidity contracts. EIP-7702 delegation invalidates these assumptions, creating exploitable gaps.
+
+\subsection{Sandbox Boundary Model}
+
+We identify eight boundaries (Table~\ref{tab:boundaries}), each defined by a pre-7702 assumption and the post-7702 reality that breaks it.
+
+\begin{table*}[t]
+\centering
+\caption{EIP-7702 sandbox boundary taxonomy: 8 boundaries, 30 checks (21 delegation + 9 validation), 14 unique CWEs}
+\label{tab:boundaries}
+\begin{tabular}{p{1.5cm}p{3.2cm}p{3.2cm}lp{1.8cm}}
+\hline
+\textbf{Boundary} & \textbf{Pre-7702 Assumption} & \textbf{Post-7702 Reality} & \textbf{Checks} & \textbf{CWEs} \\
+\hline
+Identity & \texttt{tx.origin == msg.sender} $\Rightarrow$ caller is plain EOA & Delegated EOA passes check while executing contract logic & 001--003 & CWE-284, 697, 841 \\
+\hline
+Code & \texttt{extcodesize == 0} $\Rightarrow$ address is EOA & Delegated EOAs have 23-byte designation prefix & 009, 015, 016 & CWE-345, 669, 284 \\
+\hline
+Storage & EOA storage is empty and immutable & Delegation target writes to EOA's storage; redelegation corrupts & 007, 008, 020 & CWE-665, 362, 1260 \\
+\hline
+Call & ETH transfer to EOA is safe (no callback) & Delegated EOA's \texttt{receive()} can reenter & 006, 014, 017, 018 & CWE-693, 841, 362 \\
+\hline
+Validation & Signature = conscious human approval & Delegation code can auto-sign permits/messages & 010, 011 & CWE-345, 294 \\
+\hline
+Replay & Chain-specific authorization & \texttt{chain\_id=0} enables cross-chain replay & 004, 012 & CWE-294 \\
+\hline
+Revocation & User can always undo delegations & Missing revocation path = permanent lock-in & 005, 019 & CWE-269, 799 \\
+\hline
+Gas & Bounded execution cost & Delegation target can consume unbounded gas & 013, 021 & CWE-400, 1059 \\
+\hline
+\end{tabular}
+\end{table*}
+
+\subsection{Check Classification}
+
+Each of the 30 checks follows a uniform structure:
+
+\begin{enumerate}
+    \item \textbf{Pattern}: The source-level code pattern that encodes the broken assumption (e.g., \texttt{require(tx.origin == msg.sender)}).
+    \item \textbf{Boundary}: Which of the 8 sandbox boundaries is violated.
+    \item \textbf{Bypass class}: The attack primitive enabled (e.g., \textit{delegation\_code\_execution}, \textit{storage\_corruption}).
+    \item \textbf{Severity}: CRITICAL (7 checks), HIGH (9), or MEDIUM (5) for delegation checks; HIGH (9) for validation checks, based on exploitability and impact.
+    \item \textbf{CWE}: Standard weakness classification for interoperability.
+\end{enumerate}
+
+Severity distribution reflects real-world impact: CRITICAL checks (AA7702-001, 002, 007, 008, 009, 010, 016---7 checks) represent patterns where exploitation leads to direct fund loss or account takeover. HIGH checks require specific preconditions (delegation to a malicious target). MEDIUM checks identify defense-in-depth issues.
+
+\subsection{ERC-7562 Validation Scope Rules}
+
+In addition to the 21 delegation checks, ChainEDR implements 9 checks for ERC-7562~\cite{erc7562} validation scope rules (AA7562-001 through AA7562-009). These rules target account abstraction validation functions (\texttt{validateUserOp}, \texttt{validatePaymasterUserOp}) and bundler logic:
+
+\begin{itemize}
+    \item \textbf{AA7562-001}: Validation reads blocked environment opcodes (ORIGIN, TIMESTAMP, COINBASE, etc.)
+    \item \textbf{AA7562-002}: Validation performs value transfers (violates OP-061)
+    \item \textbf{AA7562-003}: Validation depends on mutable external code identity (COD-010)
+    \item \textbf{AA7562-004}: Bundler accepts multiple authorization tuples (AUTH-010)
+    \item \textbf{AA7562-005}: Delegated account used outside sender role (AUTH-020/030)
+    \item \textbf{AA7562-006}: Same-sender operations with inconsistent delegates (AUTH-040)
+    \item \textbf{AA7562-007}: Signature validation omits userOpHash binding
+    \item \textbf{AA7562-008}: Validation callable without EntryPoint gate
+    \item \textbf{AA7562-009}: preVerificationGas omits EIP-7702 PER\_EMPTY\_ACCOUNT\_COST
+\end{itemize}
+
+These rules are critical for EIP-7702-delegated accounts operating within the ERC-4337 pipeline, where bundler-side validation divergence can lead to griefing or censorship attacks.
+
+\subsection{PreBehaviorTrace Model}
+
+For each finding, ChainEDR generates a \textit{PreBehaviorTrace}---a structured evidence record that captures the causal chain:
+
+\begin{enumerate}
+    \item \textbf{Assumptions detected}: What the code assumes (e.g., ``caller cannot execute code'').
+    \item \textbf{Delegated behavior possible}: What a delegated EOA can now do (e.g., ``execute arbitrary callback logic'').
+    \item \textbf{Violated boundary}: Which sandbox boundary is broken.
+    \item \textbf{Evidence}: Source location, matched pattern, confidence score.
+\end{enumerate}
+
+This model distinguishes ChainEDR from generic pattern matchers: each finding includes a structured explanation of \textit{why} the pattern is vulnerable specifically because of EIP-7702, not just that a suspicious pattern exists.

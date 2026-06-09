@@ -1,0 +1,224 @@
+{
+  "name": "eip7702_sandbox_microbench",
+  "version": "1.1.0",
+  "detector": "eip7702_validation",
+  "metric_unit": "sample",
+  "description": "Reproducible benchmark manifest for EIP-7702 / ERC-7562 validation-sandbox bypass evaluation.",
+  "standards": [
+    "EIP-7702",
+    "ERC-7562",
+    "ERC-4337"
+  ],
+  "samples": [
+    {
+      "id": "vuln_validation_environment",
+      "path": "vulnerable/ValidationEnvironmentBypass.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-001",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "OP-011/OP-012",
+      "scenario": "validation reads blocked environment data"
+    },
+    {
+      "id": "vuln_validation_value_call",
+      "path": "vulnerable/ValidationValueCall.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-002",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "OP-061",
+      "scenario": "validation performs value transfer"
+    },
+    {
+      "id": "vuln_code_drift",
+      "path": "vulnerable/ValidationCodeDrift.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-003",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "code_boundary",
+      "erc7562_rule": "COD-010",
+      "scenario": "validation depends on mutable external code identity"
+    },
+    {
+      "id": "vuln_multiple_auth_tuples",
+      "path": "vulnerable/MultipleAuthorizationTuples.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-004",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-010",
+      "scenario": "bundler accepts multiple EIP-7702 authorization tuples"
+    },
+    {
+      "id": "vuln_delegated_non_sender_entity",
+      "path": "vulnerable/DelegatedNonSenderEntity.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-005",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "AUTH-020/AUTH-030",
+      "scenario": "delegated EIP-7702 account is used outside sender role"
+    },
+    {
+      "id": "vuln_delegate_mismatch",
+      "path": "vulnerable/SameSenderDelegateMismatch.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-006",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-040",
+      "scenario": "same sender operations do not enforce same delegate"
+    },
+    {
+      "id": "vuln_signature_domain_binding",
+      "path": "vulnerable/SignatureDomainBinding.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-007",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "ERC-4337 userOpHash binding",
+      "scenario": "signature validation omits EntryPoint supplied userOpHash"
+    },
+    {
+      "id": "vuln_missing_entrypoint_gate",
+      "path": "vulnerable/MissingEntryPointGate.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-008",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "ERC-4337 EntryPoint isolation",
+      "scenario": "validation function is externally callable without EntryPoint gate"
+    },
+    {
+      "id": "vuln_preverification_gas_underaccounted",
+      "path": "vulnerable/PreVerificationGasUnderaccounted.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-009",
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "EIP-7702 PER_EMPTY_ACCOUNT_COST",
+      "scenario": "preVerificationGas omits EIP-7702 authorization cost"
+    },
+    {
+      "id": "fixed_validation_environment",
+      "path": "fixed/ValidationEnvironmentFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "OP-011/OP-012",
+      "scenario": "validation uses signed context and trusted storage instead of environment"
+    },
+    {
+      "id": "fixed_validation_value_call",
+      "path": "fixed/ValidationValueCallFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "OP-061",
+      "scenario": "validation checks missing funds without transferring value"
+    },
+    {
+      "id": "fixed_code_drift",
+      "path": "fixed/ValidationCodeDriftFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "code_boundary",
+      "erc7562_rule": "COD-010",
+      "scenario": "validation pins expected codehash before accepting operation"
+    },
+    {
+      "id": "fixed_multiple_auth_tuples",
+      "path": "fixed/MultipleAuthorizationTuplesFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-010",
+      "scenario": "bundler enforces exactly one EIP-7702 authorization tuple"
+    },
+    {
+      "id": "fixed_delegated_sender_role",
+      "path": "fixed/DelegatedSenderRoleFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "AUTH-020/AUTH-030",
+      "scenario": "delegated authorization is accepted only for the UserOperation sender"
+    },
+    {
+      "id": "fixed_delegate_consistency",
+      "path": "fixed/SameSenderDelegateConsistencyFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "replay_boundary",
+      "erc7562_rule": "AUTH-040",
+      "scenario": "batch handler checks same sender to same delegate consistency"
+    },
+    {
+      "id": "fixed_signature_domain_binding",
+      "path": "fixed/SignatureDomainBindingFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "validation_boundary",
+      "erc7562_rule": "ERC-4337 userOpHash binding",
+      "scenario": "signature digest includes userOpHash and account domain"
+    },
+    {
+      "id": "fixed_entrypoint_gate",
+      "path": "fixed/EntryPointGateFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "identity_boundary",
+      "erc7562_rule": "ERC-4337 EntryPoint isolation",
+      "scenario": "validation function is protected by onlyEntryPoint"
+    },
+    {
+      "id": "fixed_preverification_gas",
+      "path": "fixed/PreVerificationGasFixed.sol",
+      "label": "fixed",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "gas_boundary",
+      "erc7562_rule": "EIP-7702 PER_EMPTY_ACCOUNT_COST",
+      "scenario": "preVerificationGas includes PER_EMPTY_ACCOUNT_COST"
+    },
+    {
+      "id": "benign_minimal_account",
+      "path": "benign/MinimalSafeAccount.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "validation_boundary",
+      "erc7562_rule": null,
+      "scenario": "minimal EntryPoint-gated account"
+    },
+    {
+      "id": "benign_entrypoint_gated_account",
+      "path": "benign/EntryPointGatedAccount.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "validation_boundary",
+      "erc7562_rule": null,
+      "scenario": "benign account validation with EntryPoint gate and userOpHash"
+    },
+    {
+      "id": "benign_bundle_authorization_policy",
+      "path": "benign/BundleAuthorizationPolicy.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "expected_detector": "eip7702_validation",
+      "expected_sandbox_boundary": "replay_boundary",
+      "erc7562_rule": null,
+      "scenario": "benign bundle policy with single auth tuple, delegate consistency, and gas accounting"
+    }
+  ]
+}

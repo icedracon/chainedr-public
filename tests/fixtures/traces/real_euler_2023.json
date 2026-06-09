@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "slug": "real_euler_2023",
+    "name": "Euler Finance",
+    "category": "FLASH_LOAN",
+    "contract": "0x27182842e098f60e3d576794a5bffb0777e025d3",
+    "expect": {
+      "flash_loan": true
+    },
+    "source": "etherscan"
+  },
+  "tx": {
+    "hash": "0xc310a0affe2169d1f6feec1c63dbc7f7c62a887ad48c4f0b76b672e66c7f820d",
+    "from": "",
+    "to": "",
+    "value": "0x0",
+    "blockNumber": 0,
+    "input": "0x",
+    "gas": "0x0"
+  },
+  "trace": {
+    "type": "CALL",
+    "from": "",
+    "to": "",
+    "value": "0x0",
+    "input": "0x",
+    "output": "0x",
+    "gas": "0x0",
+    "gasUsed": "0x0",
+    "error": "",
+    "revertReason": "",
+    "calls": []
+  },
+  "logs": []
+}

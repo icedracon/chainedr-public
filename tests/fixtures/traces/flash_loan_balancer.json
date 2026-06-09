@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "slug": "flash_loan_balancer",
+    "name": "Flash Loan via Balancer",
+    "category": "FLASH_LOAN",
+    "contract": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "expect": {
+      "flash_loan": true,
+      "flash_loan_providers": [
+        "balancer"
+      ]
+    }
+  },
+  "tx": {
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "blockNumber": 18000000,
+    "trace_format": "geth"
+  },
+  "trace": {
+    "type": "CALL",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "gas": "0x7a120",
+    "gasUsed": "0x5dc00",
+    "input": "0xdeadbeef",
+    "output": "0x1",
+    "calls": [
+      {
+        "type": "CALL",
+        "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "to": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+        "value": "0x0",
+        "gas": "0x60000",
+        "gasUsed": "0x40000",
+        "input": "0x5c38449e",
+        "output": "0x1",
+        "calls": [
+          {
+            "type": "CALL",
+            "from": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+            "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+            "value": "0x0",
+            "gas": "0x50000",
+            "gasUsed": "0x30000",
+            "input": "0xf04f27070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "0x1"
+          }
+        ]
+      }
+    ]
+  },
+  "logs": []
+}

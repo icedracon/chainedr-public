@@ -1,0 +1,223 @@
+"""Evaluate ChainEDR against the held-out benchmark.
+
+The labelled `eip7702_sandbox` corpus was used during detector tuning.
+``benchmarks/holdout_v1`` is a small generalisation set authored after the
+analyzer's modifier / inline-auth / alias-flow logic was frozen — every
+sample is either a real-world pattern the analyzer should catch, or a
+suppression pattern it must stay silent on.
+
+The script reports TP / FP / FN / TN against the per-sample
+``expected_rule`` labels and writes a Markdown / JSON report.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+import types
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+
+
+def _bootstrap_chainedr() -> None:
+    sys.path.insert(0, str(REPO))
+    src_path = REPO / "src"
+    mod = types.ModuleType("chainedr")
+    mod.__path__ = [str(src_path)]
+    sys.modules["chainedr"] = mod
+
+
+def _scan(target: Path) -> list[dict]:
+    import argparse as _ap
+    import chainedr.cli as cli  # type: ignore[import-not-found]
+
+    ns = _ap.Namespace(
+        target=str(target),
+        no_external=True,
+        no_ast=False,
+        deep=False,
+        extended=False,
+        mythril=False,
+        external_timeout=30,
+        ignore=[],
+        min_severity="LOW",
+        format="json",
+        sarif=None,
+        json_out=None,
+        fail_on=None,
+        profile="default",
+        output_dir=None,
+        ai_triage=False,
+        prove=False,
+        prove_on_finding=[],
+        prove_out=None,
+    )
+
+    json_dest = REPO / "docs" / "_holdout_tmp.json"
+    json_dest.parent.mkdir(parents=True, exist_ok=True)
+    ns.json_out = str(json_dest)
+
+    devnull = open(os.devnull, "w", encoding="utf-8")
+    saved_out, saved_err = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = devnull, devnull
+    try:
+        cli.cmd_scan(ns)
+    finally:
+        sys.stdout, sys.stderr = saved_out, saved_err
+        devnull.close()
+
+    try:
+        data = json.loads(json_dest.read_text(encoding="utf-8"))
+    except Exception:
+        data = {}
+    finally:
+        try:
+            json_dest.unlink()
+        except OSError:
+            pass
+
+    if isinstance(data, list):
+        return data
+    return data.get("findings", []) or []
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--corpus",
+        default=str(REPO / "benchmarks" / "holdout_v1"),
+    )
+    args = parser.parse_args()
+
+    _bootstrap_chainedr()
+
+    corpus = Path(args.corpus)
+    labels = json.loads((corpus / "labels.json").read_text(encoding="utf-8"))
+    samples = labels["samples"]
+
+    rows = []
+    tp = fp = fn = tn = 0
+    spurious = 0
+    for sample in samples:
+        path = corpus / sample["path"]
+        expected = sample["expected_rule"]
+        findings = _scan(path)
+        rule_ids = sorted({
+            (f.get("rule_id") or f.get("check_id") or "?")
+            for f in findings
+        })
+
+        verdict = "?"
+        if expected is None:
+            if not rule_ids:
+                verdict = "TN"
+                tn += 1
+            else:
+                verdict = "FP"
+                fp += 1
+                spurious += len(rule_ids)
+        else:
+            if expected in rule_ids:
+                verdict = "TP"
+                tp += 1
+                extras = [r for r in rule_ids if r != expected]
+                if extras:
+                    spurious += len(extras)
+            else:
+                verdict = "FN"
+                fn += 1
+                if rule_ids:
+                    spurious += len(rule_ids)
+
+        rows.append({
+            "id": sample["id"],
+            "path": sample["path"],
+            "expected_rule": expected,
+            "fired_rules": rule_ids,
+            "verdict": verdict,
+            "rationale": sample["rationale"],
+        })
+
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 1.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 1.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
+    summary = {
+        "corpus": labels["name"],
+        "version": labels["version"],
+        "samples": len(samples),
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "tn": tn,
+        "spurious_extra_rules": spurious,
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(f1, 4),
+    }
+
+    out_md = REPO / "docs" / "HOLDOUT_RESULTS.md"
+    out_json = REPO / "docs" / "holdout_results.json"
+    out_json.write_text(
+        json.dumps({"summary": summary, "rows": rows}, indent=2),
+        encoding="utf-8",
+    )
+    out_md.write_text(_render_md(summary, rows), encoding="utf-8")
+
+    print(json.dumps(summary, indent=2))
+    print(f"\nWrote {out_md.relative_to(REPO)}")
+    print(f"Wrote {out_json.relative_to(REPO)}")
+    return 0
+
+
+def _render_md(summary: dict, rows: list[dict]) -> str:
+    lines = [
+        "# ChainEDR Holdout Results",
+        "",
+        "Auto-generated by `scripts/holdout_evaluator.py` against",
+        "`benchmarks/holdout_v1/`. The held-out corpus was authored after",
+        "the analyzer's detector logic was frozen and was not used to tune",
+        "regex thresholds, modifier sets, inline-auth patterns, or",
+        "alias-flow rules. This is a generalisation check, not a tuning",
+        "loop.",
+        "",
+        "## Headline",
+        "",
+        f"- Corpus: **{summary['corpus']} v{summary['version']}**",
+        f"- Samples: **{summary['samples']}**",
+        f"- TP / FP / FN / TN: **{summary['tp']} / {summary['fp']} / "
+        f"{summary['fn']} / {summary['tn']}**",
+        f"- Precision: **{summary['precision'] * 100:.1f}%**",
+        f"- Recall: **{summary['recall'] * 100:.1f}%**",
+        f"- F1: **{summary['f1'] * 100:.1f}%**",
+        f"- Spurious extra rules across samples: **"
+        f"{summary['spurious_extra_rules']}**",
+        "",
+        "## Per-sample verdict",
+        "",
+        "| Sample | Expected | Fired | Verdict |",
+        "|---|---|---|---|",
+    ]
+    for r in rows:
+        lines.append(
+            f"| `{r['id']}` | "
+            f"{r['expected_rule'] or '—'} | "
+            f"{', '.join(r['fired_rules']) or '—'} | "
+            f"**{r['verdict']}** |"
+        )
+    lines.append("")
+    lines.append("## Rationale per sample")
+    lines.append("")
+    for r in rows:
+        lines.append(
+            f"- `{r['id']}` ({r['verdict']}, expected {r['expected_rule'] or 'no fire'}): "
+            f"{r['rationale']}"
+        )
+    return "\n".join(lines) + "\n"
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

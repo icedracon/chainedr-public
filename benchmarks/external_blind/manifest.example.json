@@ -1,0 +1,35 @@
+{
+  "name": "external_blind_holdout",
+  "version": "0.1.0",
+  "description": "Held-out EIP-7702 / ERC-7562 samples collected outside ChainEDR's internal benchmark.",
+  "samples": [
+    {
+      "id": "sample-001",
+      "path": "unlabeled/Sample001.sol",
+      "detector_under_test": "eip7702",
+      "rule_under_test": "AA7702-001",
+      "source": "external-held-out-corpus",
+      "collection_reason": "Unlabeled sample collected before scanner output review."
+    },
+    {
+      "id": "labeled-control-001",
+      "path": "controls/Clean001.sol",
+      "label": "benign",
+      "expected_rule": null,
+      "rule_under_test": "AA7702-001",
+      "detector_under_test": "eip7702",
+      "source": "external-negative-control",
+      "collection_reason": "Known negative control used to measure false positives."
+    },
+    {
+      "id": "labeled-positive-001",
+      "path": "positives/MissingEntryPoint.sol",
+      "label": "vulnerable",
+      "expected_rule": "AA7562-008",
+      "rule_under_test": "AA7562-008",
+      "detector_under_test": "eip7702_validation",
+      "source": "external-positive-control",
+      "collection_reason": "Labeled positive used to verify validation-boundary recall."
+    }
+  ]
+}

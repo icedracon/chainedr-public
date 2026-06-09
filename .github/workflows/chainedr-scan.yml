@@ -1,0 +1,76 @@
+name: ChainEDR Analyzer
+
+on:
+  push:
+    branches: [main, master, analyzer]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+  pull-requests: write
+
+concurrency:
+  group: chainedr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chainedr:
+    name: Private-Beta Release Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Setup Solidity
+        run: |
+          python -m pip install --upgrade pip solc-select
+          solc-select install 0.8.28
+          solc-select use 0.8.28
+
+      - name: Validate smoke syntax
+        run: bash -n scripts/release_candidate_smoke.sh
+
+      - name: Run private-beta smoke
+        run: bash scripts/release_candidate_smoke.sh
+
+      - name: Publish primary outputs
+        run: |
+          cp .beta-smoke/vulnerable.json chainedr.json
+          cp .beta-smoke/vulnerable.sarif chainedr.sarif
+          python scripts/evaluate_blind_benchmark.py --help
+          python scripts/competitor_baseline_matrix.py --benchmark-result results/eip7702_benchmark_eval.json --output-dir results
+
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('chainedr.sarif') != ''
+        continue-on-error: true
+        with:
+          sarif_file: chainedr.sarif
+          category: chainedr
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: chainedr-report
+          path: |
+            dist/chainedr-*.whl
+            chainedr.json
+            chainedr.sarif
+            results/*.json
+            results/*.md
+            .beta-smoke/clean.json
+            .beta-smoke/clean.sarif
+            .beta-smoke/vulnerable.json
+            .beta-smoke/vulnerable.sarif
+            .beta-smoke/evidence_bundle.md
+            .beta-smoke/pocs/MANIFEST.json
+            .beta-smoke/pocs/MANIFEST.md
+          retention-days: 30

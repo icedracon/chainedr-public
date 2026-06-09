@@ -1,0 +1,8 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+EIP-7702, activated with Ethereum's Pectra upgrade in May 2025, introduces a fundamental shift in the EOA security model that mainstream static analyzers do not yet address with dedicated detector families. We presented ChainEDR, a purpose-built tool for detecting EIP-7702 delegation vulnerabilities, along with a systematic sandbox boundary taxonomy classifying 30 vulnerability patterns (21 delegation + 9 validation scope) across 8 broken assumption boundaries.
+
+On our labeled benchmark corpus (EIP7702-Bench, 47 contracts), ChainEDR achieves F1\,=\,1.00 in target-rule evaluation mode with zero false positives and zero false negatives (Wilson 95\% CI: [0.845, 1.000], binomial $p < 10^{-6}$). On production code (499 files across four codebases including OpenZeppelin Contracts v5.x), it identifies 272 EIP-7702-specific findings---including 4 manually verified CRITICAL-severity patterns---that require human triage. The tool integrates with CI/CD pipelines via SARIF output.
+
+The Ethereum ecosystem deployed EIP-7702 across the validator set. Existing contracts that rely on the EOA/contract distinction may now be affected. ChainEDR provides an automated early-warning layer for this new attack surface.

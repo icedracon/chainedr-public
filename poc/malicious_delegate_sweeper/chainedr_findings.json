@@ -1,0 +1,341 @@
+[
+  {
+    "check": "malicious_delegate_sweeper",
+    "check_number": 31,
+    "severity": "CRITICAL",
+    "confidence": 0.528,
+    "description": "Payable delegation code appears to auto-forward ETH and/or token balances to a fixed or obfuscated sink. In EIP-7702, an EOA delegated to this code can be drained when it receives ETH or when public sweep helpers are called.",
+    "recommendation": "Treat this as hostile delegate code unless the sink and every entry point are intentionally authorized. Block delegation, revoke authorization, and add explicit owner/self/EntryPoint checks before any transfer or arbitrary call helper.",
+    "cve_class": "MALICIOUS_DELEGATE_SWEEPER",
+    "trust_level": "UNTRUSTED",
+    "evidence": {
+      "file": "MaliciousDelegates.sol",
+      "eth_sweep": true,
+      "token_sweep": true,
+      "hidden_sink": true,
+      "open_arbitrary_call": true
+    },
+    "file_count": 2,
+    "source_tool": "chainedr",
+    "detected_by": [
+      "chainedr"
+    ],
+    "consensus_confidence": 0.88,
+    "fp_analysis": {
+      "verdict": "NO_OPINION",
+      "rule": null,
+      "reason": "No FP rule matched. Detector confidence stands.",
+      "confidence": 0.0,
+      "original_severity": "CRITICAL",
+      "suggested_severity": null
+    },
+    "calibration": {
+      "raw_confidence": 0.88,
+      "empirical_precision": 0.6,
+      "calibration_source": "default",
+      "calibration_n": 0
+    },
+    "is_novel": true,
+    "attack_vectors": [
+      {
+        "vector_id": "malicious_delegate_sweeper_default",
+        "attacker_role": "unknown",
+        "entry_point": "?",
+        "preconditions": [
+          "see detector description"
+        ],
+        "exploit_chain": [
+          "(no specialized chain \u2014 see detector recommendation)"
+        ],
+        "state_change": "see description",
+        "value_impact": "unknown",
+        "verdict": "UNCERTAIN",
+        "verdict_reason": "Detector fired with high severity. No specific attack-vector model exists for this check class \u2014 manual analysis required to determine the exploit chain and attacker preconditions.",
+        "verdict_confidence": 0.5,
+        "evidence": {},
+        "exploit_graph": [
+          {
+            "step_num": 1,
+            "description": "(no specialized chain \u2014 see detector recommendation)",
+            "edge_type": "entry",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.0,
+            "state_change": 0.0,
+            "notes": [],
+            "edge_feasibility": 1.0
+          }
+        ],
+        "graph_score": 1.0,
+        "weakest_edge": {
+          "step_num": 1,
+          "description": "(no specialized chain \u2014 see detector recommendation)",
+          "edge_type": "entry",
+          "reachable": 1.0,
+          "caller_controlled": 1.0,
+          "access_gate": 1.0,
+          "value_at_risk": 0.0,
+          "state_change": 0.0,
+          "notes": [],
+          "edge_feasibility": 1.0
+        },
+        "critical_path": false
+      }
+    ],
+    "owasp_2026": "UNCLASSIFIED",
+    "bounty_verdict": {
+      "status": "NEEDS_POC",
+      "reason": "Strong candidate (exploit=68%, scope=100%). Build Foundry PoC before submitting.",
+      "scope_match": 1.0,
+      "exploitability": 0.678,
+      "poc_required": true,
+      "expected_reward_band": "$50k-$1M+",
+      "duplicate_risk": 0.1,
+      "next_action": "build_poc"
+    }
+  },
+  {
+    "check": "unchecked_call",
+    "check_number": 20,
+    "severity": "HIGH",
+    "confidence": 0.48,
+    "description": "Low-level .call{value:...}() without return value check. If the call fails, ETH is silently lost. Context: ...nce > 0) {\n            address(uint160(xorResult)).call{value: selfBalance}(\"\");",
+    "recommendation": "Capture and check: (bool success, ) = target.call{value: x}(\"\"); require(success, \"transfer failed\");",
+    "cve_class": "UNCHECKED_RETURN_VALUE",
+    "trust_level": "UNTRUSTED",
+    "file_count": 2,
+    "source_tool": "chainedr",
+    "detected_by": [
+      "chainedr"
+    ],
+    "tool_descriptions": {
+      "chainedr": "Low-level .call{value:...}() without return value check. If the call fails, ETH is silently lost. Context: ...&& value > 0) {\n            address(uint160(xorResult)).call{value: value}(\"\");"
+    },
+    "consensus_confidence": 0.8,
+    "canonical_category": "EXTERNAL_CALL",
+    "fp_analysis": {
+      "verdict": "NO_OPINION",
+      "rule": null,
+      "reason": "No FP rule matched. Detector confidence stands.",
+      "confidence": 0.0,
+      "original_severity": "HIGH",
+      "suggested_severity": null
+    },
+    "calibration": {
+      "raw_confidence": 0.8,
+      "empirical_precision": 0.6,
+      "calibration_source": "default",
+      "calibration_n": 0
+    },
+    "is_novel": true,
+    "attack_vectors": [
+      {
+        "vector_id": "unchecked_call_default",
+        "attacker_role": "unknown",
+        "entry_point": "?",
+        "preconditions": [
+          "see detector description"
+        ],
+        "exploit_chain": [
+          "(no specialized chain \u2014 see detector recommendation)"
+        ],
+        "state_change": "see description",
+        "value_impact": "unknown",
+        "verdict": "UNCERTAIN",
+        "verdict_reason": "Detector fired with high severity. No specific attack-vector model exists for this check class \u2014 manual analysis required to determine the exploit chain and attacker preconditions.",
+        "verdict_confidence": 0.5,
+        "evidence": {},
+        "exploit_graph": [
+          {
+            "step_num": 1,
+            "description": "(no specialized chain \u2014 see detector recommendation)",
+            "edge_type": "entry",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.0,
+            "state_change": 0.0,
+            "notes": [],
+            "edge_feasibility": 1.0
+          }
+        ],
+        "graph_score": 1.0,
+        "weakest_edge": {
+          "step_num": 1,
+          "description": "(no specialized chain \u2014 see detector recommendation)",
+          "edge_type": "entry",
+          "reachable": 1.0,
+          "caller_controlled": 1.0,
+          "access_gate": 1.0,
+          "value_at_risk": 0.0,
+          "state_change": 0.0,
+          "notes": [],
+          "edge_feasibility": 1.0
+        },
+        "critical_path": false
+      }
+    ],
+    "owasp_2026": "UNCLASSIFIED",
+    "bounty_verdict": {
+      "status": "NEEDS_POC",
+      "reason": "Borderline case (exploit=48%, scope=100%). PoC required to justify submission.",
+      "scope_match": 1.0,
+      "exploitability": 0.48,
+      "poc_required": true,
+      "expected_reward_band": "$10k-$100k",
+      "duplicate_risk": 0.1,
+      "next_action": "build_poc"
+    }
+  },
+  {
+    "check": "dangerous_transfer",
+    "check_number": 18,
+    "severity": "MEDIUM",
+    "confidence": 0.637,
+    "description": "Native ETH sent via .transfer() which forwards only 2300 gas. Smart contract recipients (Gnosis Safe, AA wallets) with receive() costing >2300 gas will cause a revert, creating DoS. Context: ...494524213).transfer(msg.value);\n    }\n\n    function initLose...",
+    "recommendation": "Replace .transfer(amount) with: (bool success, ) = recipient.call{value: amount}(\"\"); require(success);",
+    "cve_class": "CWE_242_DANGEROUS_FUNCTION",
+    "trust_level": "UNTRUSTED",
+    "file_count": 2,
+    "source_tool": "chainedr",
+    "detected_by": [
+      "chainedr"
+    ],
+    "consensus_confidence": 0.85,
+    "fp_analysis": {
+      "verdict": "NO_OPINION",
+      "rule": null,
+      "reason": "No FP rule matched. Detector confidence stands.",
+      "confidence": 0.0,
+      "original_severity": "MEDIUM",
+      "suggested_severity": null
+    },
+    "calibration": {
+      "raw_confidence": 0.85,
+      "empirical_precision": 0.75,
+      "calibration_source": "C",
+      "calibration_n": 0
+    },
+    "prior_audit": {
+      "prior_id": "P009",
+      "protocol": "Generic ETH sender",
+      "report": "OpenZeppelin: .transfer() gas limit issues (well-known)",
+      "original_severity": "MEDIUM",
+      "match_reason": "check=dangerous_transfer, function matches /transfer|withdraw|claim/"
+    },
+    "is_novel": false,
+    "submission_note": "PRIOR ART [P009]: This class of issue was previously reported in Generic ETH sender (MEDIUM). Ensure your report focuses on the protocol-specific impact, not just pattern presence.",
+    "attack_vectors": [
+      {
+        "vector_id": "transfer_gas_dos",
+        "attacker_role": "anyone",
+        "entry_point": "?",
+        "preconditions": [
+          "recipient is a contract OR user can deploy contract as recipient",
+          "recipient fallback / receive uses > 2300 gas"
+        ],
+        "exploit_chain": [
+          "attacker deploys contract with reverting fallback or expensive logic",
+          "attacker sets that contract as their withdrawal/claim address",
+          "when protocol calls recipient.transfer(amount), the 2300 gas stipend",
+          "fails to execute fallback OR runs out of gas",
+          "transfer reverts, funds locked in protocol for this user"
+        ],
+        "state_change": "user-specific fund lock (DoS), not protocol-wide",
+        "value_impact": "fund_lock",
+        "verdict": "UNCERTAIN",
+        "verdict_reason": ".transfer() vs .call{value:}() debate: post-Istanbul gas changes make this risky but not always exploitable. Real bug requires the recipient to be attacker-controlled. If recipient is hard-coded or validated (whitelist), it's safe. Check the call-site context.",
+        "verdict_confidence": 0.55,
+        "evidence": {},
+        "exploit_graph": [
+          {
+            "step_num": 1,
+            "description": "attacker deploys contract with reverting fallback or expensive logic",
+            "edge_type": "entry",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.0,
+            "state_change": 0.0,
+            "notes": [],
+            "edge_feasibility": 1.0
+          },
+          {
+            "step_num": 2,
+            "description": "attacker sets that contract as their withdrawal/claim address",
+            "edge_type": "call",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.0,
+            "state_change": 0.6,
+            "notes": [],
+            "edge_feasibility": 1.0
+          },
+          {
+            "step_num": 3,
+            "description": "when protocol calls recipient.transfer(amount), the 2300 gas stipend",
+            "edge_type": "sink",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.95,
+            "state_change": 1.0,
+            "notes": [],
+            "edge_feasibility": 1.0
+          },
+          {
+            "step_num": 4,
+            "description": "fails to execute fallback OR runs out of gas",
+            "edge_type": "call",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.0,
+            "state_change": 0.0,
+            "notes": [],
+            "edge_feasibility": 1.0
+          },
+          {
+            "step_num": 5,
+            "description": "transfer reverts, funds locked in protocol for this user",
+            "edge_type": "call",
+            "reachable": 1.0,
+            "caller_controlled": 1.0,
+            "access_gate": 1.0,
+            "value_at_risk": 0.0,
+            "state_change": 0.0,
+            "notes": [],
+            "edge_feasibility": 1.0
+          }
+        ],
+        "graph_score": 1.0,
+        "weakest_edge": {
+          "step_num": 1,
+          "description": "attacker deploys contract with reverting fallback or expensive logic",
+          "edge_type": "entry",
+          "reachable": 1.0,
+          "caller_controlled": 1.0,
+          "access_gate": 1.0,
+          "value_at_risk": 0.0,
+          "state_change": 0.0,
+          "notes": [],
+          "edge_feasibility": 1.0
+        },
+        "critical_path": true
+      }
+    ],
+    "owasp_2026": "SC06-DoS",
+    "bounty_verdict": {
+      "status": "LOW_ROI",
+      "reason": "Strong prior-audit match (risk=85%). Program excludes known issues.",
+      "scope_match": 0.4,
+      "exploitability": 0.637,
+      "poc_required": true,
+      "expected_reward_band": "$1k-$10k",
+      "duplicate_risk": 0.85,
+      "next_action": "discard"
+    }
+  }
+]

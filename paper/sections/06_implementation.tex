@@ -1,0 +1,59 @@
+\section{Implementation}
+\label{sec:implementation}
+
+ChainEDR is implemented in Python 3.12+ and requires no external dependencies for its core EIP-7702 analysis. The architecture consists of five layers:
+
+\subsection{Architecture}
+
+\textbf{Detection layer.} The \texttt{eip7702\_detector.py} module (1,789 LOC) implements 21 static checks as pure functions, each taking a source string and returning a list of \texttt{EIP7702Finding} objects. Findings include check ID, severity, CWE, location, confidence, and sandbox metadata.
+
+\textbf{Sandbox layer.} The \texttt{eip7702\_sandbox.py} module (274 LOC) defines the \texttt{SandboxPolicy} (8 boundary definitions) and \texttt{PreBehaviorTrace} model. A factory function \texttt{build\_pre\_behavior\_trace()} maps each check ID to a structured evidence record via template lookup.
+
+\textbf{Validation layer.} The \texttt{eip7702\_validation.py} module (603 LOC) implements 9 ERC-7562 validation scope rules as a separate detector, checking compliance with account abstraction validation constraints per the ERC-7562 specification~\cite{erc7562}.
+
+\textbf{Trace analysis layer.} The \texttt{evm\_tracer.py} module (294 LOC) parses \texttt{debug\_traceTransaction} (callTracer) output into a typed call tree, detecting structural attack patterns deterministically: reentrancy (call stack cycle), flash loan usage (known provider addresses), delegatecall presence, and share price manipulation (ERC-20 transfer without deposit event).
+
+\textbf{Plugin layer.} The \texttt{detector\_plugin.py} module provides a base \texttt{Detector} class with a registry decorator. Built-in detectors (EIP-7702, Slither orchestration, bridge/ZK analysis, Noir/Aztec ZK circuit analysis) register via \texttt{@register\_detector} and are discovered automatically by the CLI.
+
+\subsection{Output Formats}
+
+ChainEDR produces three output formats:
+\begin{itemize}
+    \item \textbf{SARIF v2.1.0}: Full Static Analysis Results Interchange Format for GitHub Code Scanning integration. Each finding includes sandbox boundary metadata in the SARIF properties extension.
+    \item \textbf{JSON}: Structured output for programmatic consumption.
+    \item \textbf{Terminal}: Severity-colored human-readable output.
+\end{itemize}
+
+\subsection{CI/CD Integration}
+
+A GitHub Action (\texttt{action.yml}) wraps ChainEDR for automated scanning on pull requests. The action runs \texttt{chainedr ci --target . --sarif results.sarif} and uploads results to GitHub's Code Scanning dashboard, where findings appear as inline annotations on changed files.
+
+\subsection{Statistics}
+
+\begin{table}[h]
+\centering
+\caption{ChainEDR implementation statistics}
+\label{tab:stats}
+\begin{tabular}{llr}
+\hline
+\textbf{Layer} & \textbf{Component} & \textbf{LOC} \\
+\hline
+\multirow{4}{*}{Detection}
+& EIP-7702 detector (21 checks) & 1,789 \\
+& Validation detector (9 rules) & 603 \\
+& Sandbox model (policy + trace) & 274 \\
+& EVM trace analyzer & 294 \\
+\hline
+\multirow{3}{*}{Infrastructure}
+& FP filter (14 rules) & 1,107 \\
+& SARIF output & 165 \\
+& Plugin framework + CLI & 854 \\
+\hline
+\textbf{Detection total} & & \textbf{2,960} \\
+\textbf{Infrastructure total} & & \textbf{2,126} \\
+Test suite & & 950 tests \\
+\hline
+\end{tabular}
+\end{table}
+
+The tool is pip-installable (\texttt{pip install chainedr}) with entry points for CLI usage. Zero Solidity compilation is required---ChainEDR operates directly on source text files.

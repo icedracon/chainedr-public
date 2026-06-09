@@ -1,0 +1,20 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{EIP-7702: EOA Code Delegation}
+
+EIP-7702~\cite{eip7702}, activated with Ethereum's Pectra upgrade (May 7, 2025), introduces a new transaction type (\texttt{SET\_CODE\_TX\_TYPE}, type 0x04) that allows EOAs to set a \textit{delegation designator} in their code field. The designator is a 23-byte prefix \texttt{0xef0100 || address}, pointing to a smart contract whose code executes in the EOA's context.
+
+Key mechanics: (1) The EOA signs an authorization tuple \texttt{(chain\_id, address, nonce)} with its private key. (2) The delegation is temporary per-transaction or persistent until revoked. (3) The delegation target's code runs with the EOA's storage, balance, and address as \texttt{address(this)}. (4) Setting the delegation target to \texttt{address(0)} revokes delegation.
+
+\subsection{Account Abstraction and ERC-4337}
+
+ERC-4337~\cite{erc4337} introduced account abstraction via an alternative mempool: \textit{UserOperations} are validated and executed by an \texttt{EntryPoint} contract, enabling smart contract wallets without protocol changes. EIP-7702 complements ERC-4337 by giving EOAs smart wallet capabilities natively, but introduces tension: existing ERC-4337 infrastructure assumes specific EntryPoint versions and validation flows that EIP-7702-delegated EOAs may not follow.
+
+\subsection{ERC-7562: Validation Scope Rules}
+
+ERC-7562~\cite{erc7562} defines validation rules that restrict what operations UserOperations may perform during validation (e.g., storage access restrictions, banned opcodes). These rules were designed for smart contract wallets and do not account for EIP-7702-delegated EOAs, which can bypass validation scope by executing delegation code outside the EntryPoint's control.
+
+\subsection{The EOA Trust Model Shift}
+
+Pre-EIP-7702, Solidity security relied on a clear dichotomy: EOAs are passive (sign transactions, hold ETH, cannot execute code), while contracts are active (have code, storage, can receive callbacks). This dichotomy is encoded in patterns like \texttt{tx.origin == msg.sender} (``caller is human''), \texttt{isContract()} (``address has code''), and \texttt{.transfer()} (``safe from callbacks''). EIP-7702 collapses this distinction: any EOA can now behave as a contract, making all code that relies on the EOA/contract boundary potentially vulnerable.

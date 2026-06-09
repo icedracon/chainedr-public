@@ -1,0 +1,21 @@
+# ChainEDR - Behavioral Anomaly Detection for EVM Smart Contracts
+# Python 3.11+ required
+
+# Core dependencies for Module 1: Explorer
+web3>=6.0.0
+eth-abi>=5.0.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Database (PostgreSQL)
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+
+# Testing
+pytest>=8.0.0
+
+# Future modules (install when needed):
+# eth-brownie - for Module 2: Fuzzer
+# slither-analyzer - for advanced static analysis
+# pandas, numpy - for Module 3: Profiler
+# sqlalchemy - for behavioral profile storage

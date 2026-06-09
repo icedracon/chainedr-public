@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "name": "real_7702_bugs",
+  "description": "Externally confirmed public EIP-7702 bugs used to measure real-world ChainEDR recall. Empty until a confirmed public case is added.",
+  "cases": []
+}

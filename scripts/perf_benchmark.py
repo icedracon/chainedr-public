@@ -1,0 +1,213 @@
+"""Time `chainedr scan` across the labelled corpus and report LOC/sec.
+
+The dev-time positioning ("save -> watch -> diagnostic in the Problems
+panel") is only believable if the per-file scan latency is well under
+the developer's perceptual budget. This script grounds that claim.
+
+Outputs:
+  - docs/PERFORMANCE.md  — human-readable summary
+  - docs/perf_benchmark.json — machine-readable per-file stats
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import statistics
+import sys
+import time
+import types
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+
+
+def _bootstrap_chainedr():
+    """Make ``import chainedr`` resolve to ``src/`` without a wheel install."""
+    sys.path.insert(0, str(REPO))
+    src_path = REPO / "src"
+    mod = types.ModuleType("chainedr")
+    mod.__path__ = [str(src_path)]
+    sys.modules["chainedr"] = mod
+
+
+def _scan_once(target: Path) -> tuple[int, float]:
+    """Return (n_findings, elapsed_seconds) for a single-file scan."""
+    import argparse as _ap
+    import chainedr.cli as cli  # type: ignore[import-not-found]
+
+    ns = _ap.Namespace(
+        target=str(target),
+        no_external=True,
+        no_ast=False,
+        deep=False,
+        extended=False,
+        mythril=False,
+        external_timeout=30,
+        ignore=[],
+        min_severity="LOW",
+        format="compact",
+        sarif=None,
+        json_out=None,
+        fail_on=None,
+        profile="default",
+        output_dir=None,
+        ai_triage=False,
+        prove=False,
+        prove_on_finding=[],
+        prove_out=None,
+    )
+
+    # Suppress the compact-mode stdout so timings reflect the analyzer, not
+    # the print() pipeline.
+    devnull = open(os.devnull, "w", encoding="utf-8")
+    saved_out, saved_err = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = devnull, devnull
+    n_findings = 0
+    try:
+        t0 = time.perf_counter()
+        cli.cmd_scan(ns)
+        elapsed = time.perf_counter() - t0
+    finally:
+        sys.stdout, sys.stderr = saved_out, saved_err
+        devnull.close()
+    return n_findings, elapsed
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--corpus",
+        default=str(REPO / "benchmarks" / "eip7702_sandbox"),
+        help="Directory of .sol samples to time",
+    )
+    parser.add_argument(
+        "--warmup",
+        type=int,
+        default=2,
+        help="Warmup scans before timing (default 2)",
+    )
+    args = parser.parse_args()
+
+    _bootstrap_chainedr()
+
+    samples: list[Path] = []
+    corpus = Path(args.corpus)
+    for root, _dirs, files in os.walk(corpus):
+        for name in files:
+            if name.endswith(".sol"):
+                samples.append(Path(root) / name)
+    samples.sort()
+    if not samples:
+        print(f"no .sol samples under {corpus}", file=sys.stderr)
+        return 2
+
+    for _ in range(args.warmup):
+        _scan_once(samples[0])
+
+    per_file = []
+    total_loc = 0
+    print(f"Timing {len(samples)} .sol files...")
+    t_total_start = time.perf_counter()
+    for sample in samples:
+        try:
+            loc = len(sample.read_text(encoding="utf-8", errors="replace").splitlines())
+        except Exception:
+            loc = 0
+        _, elapsed = _scan_once(sample)
+        per_file.append({
+            "path": str(sample.relative_to(REPO)),
+            "loc": loc,
+            "elapsed_s": round(elapsed, 4),
+        })
+        total_loc += loc
+    t_total = time.perf_counter() - t_total_start
+
+    times = [r["elapsed_s"] for r in per_file]
+    times_sorted = sorted(times)
+    p50 = times_sorted[len(times_sorted) // 2]
+    p95 = times_sorted[max(0, int(len(times_sorted) * 0.95) - 1)]
+
+    summary = {
+        "samples": len(samples),
+        "total_loc": total_loc,
+        "wall_time_s": round(t_total, 3),
+        "per_file_mean_ms": round(1000.0 * statistics.mean(times), 1),
+        "per_file_p50_ms": round(1000.0 * p50, 1),
+        "per_file_p95_ms": round(1000.0 * p95, 1),
+        "per_file_max_ms": round(1000.0 * max(times), 1),
+        "loc_per_sec": round(total_loc / t_total, 1) if t_total > 0 else 0,
+    }
+
+    out_json = REPO / "docs" / "perf_benchmark.json"
+    out_md = REPO / "docs" / "PERFORMANCE.md"
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(
+        json.dumps({"summary": summary, "per_file": per_file}, indent=2),
+        encoding="utf-8",
+    )
+    out_md.write_text(_render_md(summary, per_file), encoding="utf-8")
+
+    print(json.dumps(summary, indent=2))
+    print(f"\nWrote {out_md.relative_to(REPO)}")
+    print(f"Wrote {out_json.relative_to(REPO)}")
+    return 0
+
+
+def _render_md(summary: dict, per_file: list[dict]) -> str:
+    lines = [
+        "# ChainEDR Scan Performance",
+        "",
+        "Auto-generated by `scripts/perf_benchmark.py`. Times every `.sol` in",
+        "`benchmarks/eip7702_sandbox/` end-to-end through `cmd_scan` with",
+        "`--format compact` and `--no-external`, then reports per-file and",
+        "aggregate latency. The point is to ground the dev-time claim: if",
+        "scan latency is below a developer's perceptual budget (~250 ms),",
+        "`chainedr watch` is usable as a security linter; otherwise it is",
+        "post-save batch work.",
+        "",
+        "## Headline",
+        "",
+        f"- Samples: **{summary['samples']}**",
+        f"- Total LOC: **{summary['total_loc']:,}**",
+        f"- Wall time (sequential): **{summary['wall_time_s']} s**",
+        f"- Throughput: **{summary['loc_per_sec']:,} LOC/sec**",
+        "",
+        f"- Per-file mean: **{summary['per_file_mean_ms']} ms**",
+        f"- Per-file p50: **{summary['per_file_p50_ms']} ms**",
+        f"- Per-file p95: **{summary['per_file_p95_ms']} ms**",
+        f"- Per-file max: **{summary['per_file_max_ms']} ms**",
+        "",
+        "## What this means for `chainedr watch`",
+        "",
+        "If per-file p95 is under ~250 ms, save-triggered re-scans feel",
+        "instant. Past ~500 ms developers stop trusting the watch loop.",
+        "Past 1 s the dev-time claim is dead and the tool should be",
+        "repositioned as a CI / pre-commit gate only.",
+        "",
+        "## Methodology",
+        "",
+        "- Warmup: 2 scans on the first sample to amortise import-time",
+        "  costs (registry hydration, detector discovery, regex compile).",
+        "- Output is captured to `/dev/null` during timing so the print",
+        "  pipeline does not dominate the measurement.",
+        "- External tools (Slither, Aderyn, solc AST) are disabled — this",
+        "  measures the static-core path that runs on every save.",
+        "- Sequential single-threaded run; the watch loop does the same.",
+        "",
+        "## Per-file detail",
+        "",
+        "| File | LOC | Elapsed (ms) |",
+        "|---|---:|---:|",
+    ]
+    for row in per_file:
+        lines.append(
+            f"| `{row['path']}` | {row['loc']} | "
+            f"{row['elapsed_s'] * 1000:.1f} |"
+        )
+    return "\n".join(lines) + "\n"
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

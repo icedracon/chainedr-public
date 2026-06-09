@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">
+<rect width="920" height="520" rx="12" fill="#0d1117"/>
+<rect width="920" height="40" rx="12" fill="#161b22"/>
+<rect y="20" width="920" height="20" fill="#161b22"/>
+<circle cx="26" cy="20" r="6" fill="#ff5f56"/>
+<circle cx="48" cy="20" r="6" fill="#ffbd2e"/>
+<circle cx="70" cy="20" r="6" fill="#27c93f"/>
+<text x="460.0" y="25" fill="#8b949e" font-size="13" text-anchor="middle">chainedr — terminal</text>
+<rect x="-10" y="-10" width="1" height="1" fill="none"><animate id="loop" attributeName="x" begin="0s;loop.end" dur="13.0s" from="-10" to="-10"/></rect>
+<text x="28" y="78" fill="#c9d1d9" font-size="17" font-weight="bold" opacity="0"><tspan fill="#3fb950">$</tspan> <tspan fill="#c9d1d9">chainedr scan ./contracts --no-external</tspan><animate attributeName="opacity" from="0" to="1" begin="loop.begin+0.4s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/></text>
+<text x="28" y="108" fill="#8b949e" font-size="14" font-weight="normal" opacity="0">ChainEDR v3.0.0 — EIP-7702 / account-abstraction analyzer<animate attributeName="opacity" from="0" to="1" begin="loop.begin+1.6s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/></text>
+<text x="28" y="138" fill="#39c5cf" font-size="14" font-weight="normal" opacity="0">[*] scanning ./contracts …<animate attributeName="opacity" from="0" to="1" begin="loop.begin+2.3s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/></text>
+<rect x="500" y="64" width="9" height="18" fill="#3fb950" opacity="0"><animate attributeName="opacity" values="0;1;1;0;0" dur="1s" begin="loop.begin+0.4s" repeatCount="6"/></rect>
+<g opacity="0"><animate attributeName="opacity" from="0" to="1" begin="loop.begin+3.2s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/>
+<rect x="28" y="173" width="864" height="26" rx="6" fill="#1b2330"/>
+<rect x="40" y="176" width="52" height="20" rx="10" fill="#f85149" opacity="0.18"/>
+<text x="66" y="190" fill="#f85149" font-size="12" font-weight="bold" text-anchor="middle">CRIT</text>
+<text x="108" y="190" fill="#39c5cf" font-size="13" font-weight="bold">AA7702-009</text>
+<text x="210" y="190" fill="#c9d1d9" font-size="13">ERC-1967 proxy as delegation target</text>
+<circle cx="770" cy="185" r="5" fill="#d29922"/>
+<text x="782" y="190" fill="#d29922" font-size="12" font-weight="bold">UNCERTAIN</text>
+</g>
+<g opacity="0"><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.0s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/>
+<rect x="28" y="207" width="864" height="26" rx="6" fill="#1b2330"/>
+<rect x="40" y="210" width="52" height="20" rx="10" fill="#db8e1c" opacity="0.18"/>
+<text x="66" y="224" fill="#db8e1c" font-size="12" font-weight="bold" text-anchor="middle">HIGH</text>
+<text x="108" y="224" fill="#39c5cf" font-size="13" font-weight="bold">AA7702-002</text>
+<text x="210" y="224" fill="#c9d1d9" font-size="13">code.length EOA check broken by 7702</text>
+<circle cx="770" cy="219" r="5" fill="#3fb950"/>
+<text x="782" y="224" fill="#3fb950" font-size="12" font-weight="bold">CONFIRM</text>
+</g>
+<g opacity="0"><animate attributeName="opacity" from="0" to="1" begin="loop.begin+4.8s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/>
+<rect x="28" y="241" width="864" height="26" rx="6" fill="#1b2330"/>
+<rect x="40" y="244" width="52" height="20" rx="10" fill="#d29922" opacity="0.18"/>
+<text x="66" y="258" fill="#d29922" font-size="12" font-weight="bold" text-anchor="middle">MED</text>
+<text x="108" y="258" fill="#39c5cf" font-size="13" font-weight="bold">AA7702-004</text>
+<text x="210" y="258" fill="#c9d1d9" font-size="13">signed action missing chain_id</text>
+<circle cx="770" cy="253" r="5" fill="#d29922"/>
+<text x="782" y="258" fill="#d29922" font-size="12" font-weight="bold">UNCERTAIN</text>
+</g>
+<g opacity="0"><animate attributeName="opacity" from="0" to="1" begin="loop.begin+5.6s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/>
+<rect x="28" y="275" width="864" height="26" rx="6" fill="#1b2330"/>
+<rect x="40" y="278" width="52" height="20" rx="10" fill="#d29922" opacity="0.18"/>
+<text x="66" y="292" fill="#d29922" font-size="12" font-weight="bold" text-anchor="middle">MED</text>
+<text x="108" y="292" fill="#39c5cf" font-size="13" font-weight="bold">AA7702-016</text>
+<text x="210" y="292" fill="#c9d1d9" font-size="13">ecrecover without EIP-1271 fallback</text>
+<circle cx="770" cy="287" r="5" fill="#d29922"/>
+<text x="782" y="292" fill="#d29922" font-size="12" font-weight="bold">UNCERTAIN</text>
+</g>
+<text x="28" y="338" fill="#3fb950" font-size="14" font-weight="bold" opacity="0">✔ 30 dedicated checks · 8 sandbox boundaries · verdict-labelled<animate attributeName="opacity" from="0" to="1" begin="loop.begin+6.6s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/></text>
+<text x="28" y="364" fill="#8b949e" font-size="13" opacity="0">benchmark F1 = 1.00, corpus-scoped  ·  fair competitor run pending<animate attributeName="opacity" from="0" to="1" begin="loop.begin+7.1s" dur="0.28s" fill="freeze"/><animate attributeName="opacity" to="0" begin="loop.begin+12.2s" dur="0.25s" fill="freeze"/></text>
+</svg>

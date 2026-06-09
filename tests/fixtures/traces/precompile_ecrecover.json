@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "slug": "precompile_ecrecover",
+    "name": "ecrecover precompile calls",
+    "category": "PRECOMPILE",
+    "contract": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "expect": {
+      "ecrecover_calls": 2,
+      "precompiles_excluded_from_unique": true
+    }
+  },
+  "tx": {
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "blockNumber": 18000000,
+    "trace_format": "geth"
+  },
+  "trace": {
+    "type": "CALL",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "gas": "0x7a120",
+    "gasUsed": "0x5dc00",
+    "input": "0xdeadbeef",
+    "output": "0x1",
+    "calls": [
+      {
+        "type": "STATICCALL",
+        "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "to": "0x0000000000000000000000000000000000000001",
+        "value": "0x0",
+        "gas": "0x10000",
+        "gasUsed": "0xc00",
+        "input": "0xabababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab",
+        "output": "0x000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "type": "STATICCALL",
+        "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "to": "0x0000000000000000000000000000000000000001",
+        "value": "0x0",
+        "gas": "0x10000",
+        "gasUsed": "0xc00",
+        "input": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "output": "0x000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ]
+  },
+  "logs": []
+}

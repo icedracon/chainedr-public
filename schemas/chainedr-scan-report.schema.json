@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/icedracon/chainedr/schemas/chainedr-scan-report.schema.json",
+  "title": "ChainEDR scan report",
+  "description": "Stable JSON contract emitted by `chainedr scan --json` and `chainedr ci --json`.",
+  "type": "object",
+  "required": [
+    "chainedr_version",
+    "timestamp",
+    "elapsed_s",
+    "project",
+    "summary",
+    "findings"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "chainedr_version": {
+      "type": "string",
+      "description": "Analyzer version that produced the report."
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "UTC ISO-8601 timestamp for report creation."
+    },
+    "elapsed_s": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Scanner wall time in seconds."
+    },
+    "project": {
+      "type": "object",
+      "required": ["types", "files"],
+      "additionalProperties": true,
+      "properties": {
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Detected project types."
+        },
+        "files": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of scanned files in the discovered project."
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "by_severity", "by_detector"],
+      "additionalProperties": true,
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total findings after filtering."
+        },
+        "by_severity": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Finding counts keyed by severity."
+        },
+        "by_detector": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Finding counts keyed by detector name."
+        },
+        "by_reviewer_confidence": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Finding counts keyed by reviewer confidence grade."
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "detector",
+          "rule_id",
+          "severity",
+          "title",
+          "description",
+          "location",
+          "file_path",
+          "line",
+          "category",
+          "cwe",
+          "confidence",
+          "analysis_depth",
+          "reviewer_confidence",
+          "exploitable",
+          "fix"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "detector": {
+            "type": "string",
+            "description": "Detector that produced the finding."
+          },
+          "rule_id": {
+            "type": "string",
+            "description": "Stable rule identifier, such as AA7702-001."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"],
+            "description": "Triage severity, not exploit confirmation."
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "category": {
+            "type": "string"
+          },
+          "cwe": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "analysis_depth": {
+            "type": "string",
+            "enum": [
+              "regex",
+              "standard_json_ast",
+              "semantic_index",
+              "deep_ast",
+              "deep_fallback",
+              "external_tool",
+              "experimental",
+              "dynamic_confirmation",
+              "static_heuristic"
+            ],
+            "description": "Reviewer-facing evidence depth for the finding."
+          },
+          "reviewer_confidence": {
+            "type": "object",
+            "required": [
+              "score",
+              "grade",
+              "label",
+              "analysis_depth",
+              "proof_status",
+              "evidence",
+              "gaps"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Evidence maturity score. This is not exploit certainty."
+              },
+              "grade": {
+                "type": "string",
+                "enum": ["A", "B", "C", "D"]
+              },
+              "label": {
+                "type": "string",
+                "enum": [
+                  "strong_evidence",
+                  "review_ready",
+                  "triage_candidate",
+                  "needs_evidence"
+                ]
+              },
+              "analysis_depth": {
+                "type": "string"
+              },
+              "proof_status": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "gaps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Reviewer-facing evidence maturity. It grades proof quality, not confirmed exploitability."
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "fix": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Detector-specific evidence, proof recipes, semantic context, and adapters."
+          }
+        }
+      }
+    }
+  }
+}

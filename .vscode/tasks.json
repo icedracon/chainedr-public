@@ -1,0 +1,93 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ChainEDR: watch (compact, dev-time)",
+      "type": "shell",
+      "command": "chainedr",
+      "args": ["watch", "${workspaceFolder}", "--format", "compact"],
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always",
+        "clear": true
+      },
+      "problemMatcher": {
+        "owner": "chainedr",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[\\+\\] changed: ",
+          "endsPattern": "^Watching for changes"
+        },
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+): \\[(CRITICAL|HIGH|MEDIUM|LOW)(?:/[ABCD?])?\\] (AA[0-9]{4}-[0-9]+) (.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "ChainEDR: scan (one-shot, compact)",
+      "type": "shell",
+      "command": "chainedr",
+      "args": ["scan", "${workspaceFolder}", "--format", "compact"],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "silent"
+      },
+      "problemMatcher": {
+        "owner": "chainedr",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+): \\[(CRITICAL|HIGH|MEDIUM|LOW)(?:/[ABCD?])?\\] (AA[0-9]{4}-[0-9]+) (.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      }
+    },
+    {
+      "label": "ChainEDR: scan + prove (Foundry skeletons)",
+      "type": "shell",
+      "command": "chainedr",
+      "args": [
+        "scan",
+        "${workspaceFolder}",
+        "--format",
+        "compact",
+        "--prove",
+        "--prove-out",
+        "${workspaceFolder}/chainedr-poc"
+      ],
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "always"
+      },
+      "problemMatcher": {
+        "owner": "chainedr",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+): \\[(CRITICAL|HIGH|MEDIUM|LOW)(?:/[ABCD?])?\\] (AA[0-9]{4}-[0-9]+) (.+)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      }
+    }
+  ]
+}

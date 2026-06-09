@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Databases
+*.db
+*.db-journal
+
+# Private bounty / PoC work dirs (never push)
+_private/
+doppler_full/
+derc20_poc/
+batch_results/
+agglayer-contracts/
+
+# Data (bounty repos - don't push other people's code)
+data/*
+!data/known_attacks/
+!data/known_attacks/attacks_db.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Debug scripts
+debug_*.py
+Untitled-*.txt
+
+# Audit data (private)
+*_audit/
+*_audit.py
+*_poc/
+reports/
+results/
+archive/
+
+# Environment
+.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.tmp
+*.bak

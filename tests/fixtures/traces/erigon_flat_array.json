@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "slug": "erigon_flat_array",
+    "name": "Erigon flat-array trace format",
+    "category": "FORMAT",
+    "contract": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "expect": {
+      "nodes_gte": 2
+    }
+  },
+  "tx": {
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "value": "0x0",
+    "blockNumber": 18000000,
+    "trace_format": "erigon"
+  },
+  "trace": [
+    {
+      "action": {
+        "callType": "call",
+        "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "to": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "value": "0xde0b6b3a7640000",
+        "gas": "0x7a120",
+        "input": "0xdeadbeef"
+      },
+      "result": {
+        "gasUsed": "0x5dc00",
+        "output": "0x1"
+      },
+      "subtraces": 1,
+      "traceAddress": [],
+      "type": "call"
+    },
+    {
+      "action": {
+        "callType": "call",
+        "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "to": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+        "value": "0x0",
+        "gas": "0x50000",
+        "input": "0x38ed1739"
+      },
+      "result": {
+        "gasUsed": "0x30000",
+        "output": "0x1"
+      },
+      "subtraces": 0,
+      "traceAddress": [
+        0
+      ],
+      "type": "call"
+    }
+  ],
+  "logs": []
+}

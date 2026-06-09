@@ -1,0 +1,139 @@
+name: 'ChainEDR Analyzer Scan'
+description: 'Run ChainEDR Analyzer for Pectra-era smart-account security findings and SARIF output'
+author: 'Zorayr Saroyan <zorayrsaroyan13@gmail.com>'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  contracts-path:
+    description: 'Path to contracts directory or file'
+    required: false
+    default: '.'
+  min-severity:
+    description: 'Minimum severity to report: LOW, MEDIUM, HIGH, CRITICAL'
+    required: false
+    default: 'LOW'
+  fail-on:
+    description: 'Fail CI on this severity or above: MEDIUM, HIGH, CRITICAL'
+    required: false
+    default: 'HIGH'
+  output-sarif:
+    description: 'Output findings as SARIF for GitHub Security tab'
+    required: false
+    default: 'true'
+  deep:
+    description: 'Enable slower AST-assisted precision gates'
+    required: false
+    default: 'false'
+  extended:
+    description: 'Enable opt-in extended checks that are not yet fully FP-gated'
+    required: false
+    default: 'false'
+
+outputs:
+  findings-count:
+    description: 'Total number of findings'
+  critical-count:
+    description: 'Number of critical findings'
+  high-count:
+    description: 'Number of high findings'
+  medium-count:
+    description: 'Number of medium findings'
+  sarif-path:
+    description: 'Path to SARIF output file'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install ChainEDR
+      shell: bash
+      run: |
+        # Published package preferred; fall back to installing from this repo's src/
+        pip install chainedr --quiet 2>/dev/null \
+          || pip install "${{ github.action_path }}/../../src" --quiet \
+          || pip install ./src --quiet
+
+    - name: Run ChainEDR Analyzer (CI gate)
+      id: scan
+      shell: bash
+      run: |
+        set +e
+        FAIL_ON="$(echo "${{ inputs.fail-on }}" | tr '[:upper:]' '[:lower:]')"
+        MIN_SEVERITY="$(echo "${{ inputs.min-severity }}" | tr '[:lower:]' '[:upper:]')"
+        EXTRA_ARGS=()
+        if [ "${{ inputs.deep }}" = "true" ]; then
+          EXTRA_ARGS+=(--deep)
+        fi
+        if [ "${{ inputs.extended }}" = "true" ]; then
+          EXTRA_ARGS+=(--extended)
+        fi
+
+        chainedr ci "${{ inputs.contracts-path }}" \
+          --fail-on "$FAIL_ON" \
+          --min-severity "$MIN_SEVERITY" \
+          --sarif chainedr.sarif \
+          --json chainedr.json \
+          --no-external \
+          "${EXTRA_ARGS[@]}"
+        GATE=$?   # cmd_ci exits non-zero when the gate trips
+
+        # Emit counts for PR comments. Supports both legacy flat-list JSON and
+        # the current {"findings": [...]} report shape.
+        python3 - <<'PY'
+        import json
+        import os
+        from pathlib import Path
+
+        path = Path("chainedr.json")
+        findings = []
+        if path.exists():
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+                findings = data if isinstance(data, list) else data.get("findings", [])
+            except Exception:
+                findings = []
+        counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
+        for finding in findings:
+            sev = str(finding.get("severity", "")).upper()
+            if sev in counts:
+                counts[sev] += 1
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+            out.write(f"findings-count={len(findings)}\n")
+            out.write(f"critical-count={counts['CRITICAL']}\n")
+            out.write(f"high-count={counts['HIGH']}\n")
+            out.write(f"medium-count={counts['MEDIUM']}\n")
+            out.write("sarif-path=chainedr.sarif\n")
+        Path("chainedr_counts.env").write_text(
+            "\n".join([
+                f"TOTAL={len(findings)}",
+                f"CRITICAL={counts['CRITICAL']}",
+                f"HIGH={counts['HIGH']}",
+                f"MEDIUM={counts['MEDIUM']}",
+            ]) + "\n",
+            encoding="utf-8",
+        )
+        PY
+        . chainedr_counts.env
+
+        if [ "$GATE" -ne 0 ]; then
+          echo "::error::ChainEDR Analyzer gate tripped (fail-on=$FAIL_ON): $CRITICAL CRITICAL, $HIGH HIGH, $MEDIUM MEDIUM"
+        fi
+        exit "$GATE"
+
+    - name: Upload SARIF to GitHub Security
+      if: inputs.output-sarif == 'true' && always()
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: chainedr.sarif
+      continue-on-error: true
+
+    - name: Upload findings artifact
+      uses: actions/upload-artifact@v7
+      if: always()
+      with:
+        name: chainedr-security-report
+        path: |
+          chainedr.json
+          chainedr.sarif

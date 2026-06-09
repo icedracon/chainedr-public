@@ -1,0 +1,173 @@
+{
+  "name": "chainedr_external_v1",
+  "version": "1.0.0",
+  "description": "External labelled benchmark — production Solidity files pulled live from upstream repositories that the ChainEDR maintainers did NOT author. Each label records the rule the analyzer fires on the file, the maintainers' triage verdict, and the source URL of the upstream file so a reviewer can re-fetch and re-scan.",
+  "policy": "Verdicts are: TP (true positive, real signal), ARCH (architecture advisory the rule is meant to surface), FP (false positive needing a future detector fix), or N/A (clean file, no AA7702-* finding expected). Labels were assigned by the ChainEDR maintainers after manual review of the upstream source; an external auditor's verdict may differ.",
+  "scoring": {
+    "metric": "precision_on_aa7702_fires",
+    "definition": "Of all AA7702-* fires on the corpus, the share whose verdict is TP or ARCH.",
+    "exclude_rules": ["bridge_bytes32_truncation"]
+  },
+  "samples": [
+    {
+      "id": "lightaccount",
+      "path": "LightAccount.sol",
+      "source_url": "https://raw.githubusercontent.com/alchemyplatform/light-account/develop/src/LightAccount.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Alchemy LightAccount — clean. No AA7702-* fire after the cleanup sweep + AST-backed suppression."
+    },
+    {
+      "id": "multiowner_lightaccount",
+      "path": "MultiOwnerLightAccount.sol",
+      "source_url": "https://raw.githubusercontent.com/alchemyplatform/light-account/develop/src/MultiOwnerLightAccount.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Alchemy MultiOwnerLightAccount — clean."
+    },
+    {
+      "id": "kernel",
+      "path": "Kernel.sol",
+      "source_url": "https://raw.githubusercontent.com/zerodevapp/kernel/dev/src/Kernel.sol",
+      "fires": ["AA7702-009"],
+      "verdict": "ARCH",
+      "rationale": "ZeroDev Kernel is an intentional 7702-aware modular smart account with an ERC-1967 implementation slot. AA7702-009 is meant to surface this as a HIGH architecture advisory, not a CRITICAL exploit claim — and after the marker-aware downgrade it correctly reports HIGH."
+    },
+    {
+      "id": "nexus",
+      "path": "Nexus.sol",
+      "source_url": "https://raw.githubusercontent.com/bcnmy/nexus/dev/contracts/Nexus.sol",
+      "fires": ["AA7702-009"],
+      "verdict": "ARCH",
+      "rationale": "Biconomy Nexus — same as Kernel: intentional 7702 modular AA with proxy slot. HIGH architecture advisory."
+    },
+    {
+      "id": "safe",
+      "path": "Safe.sol",
+      "source_url": "https://raw.githubusercontent.com/safe-global/safe-smart-account/main/contracts/Safe.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Safe — no AA7702-* fires after the v == 0 -> checkContractSignature 1271 dispatcher fix. (The unrelated bytes32 truncation generic finding is excluded from scoring.)"
+    },
+    {
+      "id": "solady_erc4337",
+      "path": "Solady_ERC4337.sol",
+      "source_url": "https://raw.githubusercontent.com/Vectorized/solady/main/src/accounts/ERC4337.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Solady ERC4337 — clean after the AST-backed inline-_init helper resolution."
+    },
+    {
+      "id": "solady_erc4337_factory",
+      "path": "Solady_ERC4337Factory.sol",
+      "source_url": "https://raw.githubusercontent.com/Vectorized/solady/main/src/accounts/ERC4337Factory.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Solady factory — clean."
+    },
+    {
+      "id": "solady_erc7821",
+      "path": "Solady_ERC7821.sol",
+      "source_url": "https://raw.githubusercontent.com/Vectorized/solady/main/src/accounts/ERC7821.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Solady ERC7821 — clean."
+    },
+    {
+      "id": "solady_uups",
+      "path": "Solady_UUPSUpgradeable.sol",
+      "source_url": "https://raw.githubusercontent.com/Vectorized/solady/main/src/utils/UUPSUpgradeable.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Solady UUPSUpgradeable — clean."
+    },
+    {
+      "id": "solady_ownable",
+      "path": "Solady_Ownable.sol",
+      "source_url": "https://raw.githubusercontent.com/Vectorized/solady/main/src/auth/Ownable.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Solady Ownable — clean."
+    },
+    {
+      "id": "alchemy_modular_account",
+      "path": "Alchemy_ModularAccount.sol",
+      "source_url": "https://raw.githubusercontent.com/alchemyplatform/modular-account/develop/src/account/ModularAccount.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Alchemy ModularAccount — clean."
+    },
+    {
+      "id": "coinbase_smart_wallet",
+      "path": "CoinbaseSmartWallet.sol",
+      "source_url": "https://raw.githubusercontent.com/coinbase/smart-wallet/master/src/CoinbaseSmartWallet.sol",
+      "fires": ["AA7562-003", "AA7702-021"],
+      "verdict": "ARCH",
+      "rationale": "Coinbase Smart Wallet — pins a specific EntryPoint address (AA7702-021) and has validation flow that the AA7562-003 sandbox check flags. Both are architecture advisories for an auditor, not exploit claims."
+    },
+    {
+      "id": "ithaca_account",
+      "path": "IthacaAccount.sol",
+      "source_url": "https://raw.githubusercontent.com/ithacaxyz/account/main/src/IthacaAccount.sol",
+      "fires": ["AA7702-012", "AA7702-013"],
+      "verdict": "ARCH",
+      "rationale": "Ithaca Account uses 4337-style 2D nonce sequences (AA7702-012) and has gas-aware execution paths (AA7702-013). Both are intentional architecture choices that warrant reviewer attention; not exploits."
+    },
+    {
+      "id": "uniswap_permit2",
+      "path": "Uniswap_Permit2.sol",
+      "source_url": "https://raw.githubusercontent.com/Uniswap/permit2/main/src/AllowanceTransfer.sol",
+      "fires": ["AA7702-010"],
+      "verdict": "TP",
+      "rationale": "Uniswap Permit2 — permit() is not 7702-aware. AA7702-010 is a real signal: a delegated EOA can programmatically auto-sign permits, the protocol does not detect that. Worth a reviewer's time as a 7702 advisory."
+    },
+    {
+      "id": "entrypoint_v07",
+      "path": "EntryPoint.sol",
+      "source_url": "https://raw.githubusercontent.com/eth-infinitism/account-abstraction/develop/contracts/core/EntryPoint.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "ERC-4337 EntryPoint v0.7 — clean after the AA-infrastructure filter. EntryPoint is the central hub of AA, not a delegation target itself."
+    },
+    {
+      "id": "simple_account",
+      "path": "SimpleAccount.sol",
+      "source_url": "https://raw.githubusercontent.com/eth-infinitism/account-abstraction/main/contracts/samples/SimpleAccount.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "ERC-4337 SimpleAccount sample — clean."
+    },
+    {
+      "id": "simple_account_factory",
+      "path": "SimpleAccountFactory.sol",
+      "source_url": "https://raw.githubusercontent.com/eth-infinitism/account-abstraction/main/contracts/samples/SimpleAccountFactory.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "SimpleAccount factory — clean."
+    },
+    {
+      "id": "erc7579_msa_advanced",
+      "path": "ERC7579_MSAAdvanced.sol",
+      "source_url": "https://raw.githubusercontent.com/erc7579/erc7579-implementation/main/src/MSAAdvanced.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "ERC-7579 reference MSA — clean."
+    },
+    {
+      "id": "etherspot_wallet",
+      "path": "Etherspot_Wallet.sol",
+      "source_url": "https://raw.githubusercontent.com/etherspot/etherspot-prime-contracts/master/src/wallet/EtherspotWallet.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "Etherspot Prime Wallet — clean."
+    },
+    {
+      "id": "oz_address",
+      "path": "OZ_Address.sol",
+      "source_url": "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/master/contracts/utils/Address.sol",
+      "fires": [],
+      "verdict": "N/A",
+      "rationale": "OpenZeppelin Address library — clean after the pure-library AA7702-002 filter. Library implementations of isContract are not themselves the EOA security boundary."
+    }
+  ]
+}
